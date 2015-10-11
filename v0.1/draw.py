@@ -171,7 +171,7 @@ class UpdateThumbnails(bpy.types.Operator):
 class DeleteUnusedMaterials(bpy.types.Operator):
     bl_idname = "material.delete_unused_materials"
     bl_label = "Delete Unused Materials"
-    bl_description = ""
+    bl_description = "Delete Unused Materials"
     bl_options = {"REGISTER", "INTERNAL"}
    
     @classmethod
@@ -204,24 +204,29 @@ class BSL_panel(bpy.types.Panel):
         wm = context.window_manager
         
         #layout.operator("material.delete_unused_materials",text="Remove", icon='CANCEL')
-       
         layout.template_icon_view(wm, "my_previews")
          
         layout.label("Objects:", icon='OBJECT_DATAMODE')
         row = layout.row(align=True)
-        #row.operator("object.material_slot_remove",text="Remove Material", icon='X')          
-        #row.operator("material.delete_unused_materials",text="Unused")
+        row.operator("object.material_slot_remove",text="Remove Material", icon='X')          
+        row.operator("material.delete_unused_materials",text="Unused", icon='X')
         layout.operator("object.select_linked", icon='RESTRICT_SELECT_OFF').type='MATERIAL'
-        layout.operator("material.import_into_bsl", icon='APPEND_BLEND')
-        layout.operator("material.update_thumbnails", icon='FILE_REFRESH')
         
 
 
 def BSL_AddMaterial(self, context):
     layout = self.layout
-    layout.label("BSL fonctions")            
-    layout.operator("material.delete_unused_materials",text="Delete unused")
-    layout.operator("material.import_into_bsl")
+    wm = context.window_manager
+    
+    layout.label("Blender Shader Library")   
+    row = layout.row(align=True)
+    row.operator("material.import_into_bsl",text="Add Material To Library", icon='ZOOMIN')
+    row.operator("material.update_thumbnails",text="", icon='FILE_REFRESH')
+    layout.template_icon_view(wm, "my_previews")  
+           
+    
+    layout.operator("material.delete_unused_materials",text="Delete Unused Material", icon='X')
+    layout.operator("object.select_linked", icon='RESTRICT_SELECT_OFF').type='MATERIAL'
            
  
        
