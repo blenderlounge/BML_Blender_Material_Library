@@ -18,4 +18,3 @@ if __name__ == '__main__':
     bpy.ops.wm.save_mainfile()
     remove(blendfile)
     bpy.ops.wm.quit_blender()
-    
