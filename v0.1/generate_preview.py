@@ -9,7 +9,7 @@ if __name__ == '__main__':
     material = sys.argv[5] # récupère le nom du matériau
     thumbnails_directory = sys.argv[6] # récupère le dossier de stockage des miniatures
     
-    bpy.data.objects["render_material"].active_material = bpy.data.materials[material]
+    bpy.data.objects["_Render_Model"].active_material = bpy.data.materials[material]
 
     bpy.ops.render.render()
     
