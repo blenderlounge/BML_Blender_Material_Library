@@ -35,7 +35,7 @@ def import_materials_from_files(self, context):
     
     library_path = os.path.dirname(__file__)   
 
-    SECTION   = "Material" # on importe un matériau
+    SECTION   = "Material" # on importe un matÃ©riau
     mat_name = (bpy.data.window_managers["WinMan"].my_previews.split("."))[0]
    
     if mat_name in bpy.data.materials:
@@ -43,7 +43,7 @@ def import_materials_from_files(self, context):
        
     else:                  
         blendfile_1 = join(library_path,'Shader_Library.blend')
-        source_files = [blendfile_1] # liste des fichiers où tu va chercher les matériaux
+        source_files = [blendfile_1] # liste des fichiers oÃ¹ tu va chercher les matÃ©riaux
  
         with bpy.data.libraries.load(blendfile_1) as (data_from, data_to):
             if data_from.materials:                 
@@ -97,7 +97,7 @@ def remove_material_from_library():
     os.remove(thumbnail_remove)
 
     
-def get_enum_previews(self, context): # self et context demandés par l'API
+def get_enum_previews(self, context): # self et context demandÃ©s par l'API
     """EnumProperty callback"""
     return enum_previews_from_directory_items(context.window_manager.is_generating_preview)
 
@@ -153,7 +153,7 @@ class ImportIntoBSL(bpy.types.Operator):
         import_materials_in_library()
         
         library_path = os.path.dirname(__file__)
-        material = bpy.context.object.active_material.name # à faire avant lancement subprocess, qui n'y aura plus accès (au context du fichier courant)
+        material = bpy.context.object.active_material.name # Ã  faire avant lancement subprocess, qui n'y aura plus accÃ¨s (au context du fichier courant)
         
         context.window_manager.is_generating_preview = True
         
@@ -162,7 +162,7 @@ class ImportIntoBSL(bpy.types.Operator):
         
         context.window_manager.is_generating_preview = False
         
-        #bpy.ops.material.update_thumbnails() ### A modifier (modal ?) pour qu'il attende la fin de la génération, sans être bloquant
+        #bpy.ops.material.update_thumbnails() ### A modifier (modal ?) pour qu'il attende la fin de la gÃ©nÃ©ration, sans Ãªtre bloquant
         
         return {"FINISHED"}
 
@@ -249,10 +249,9 @@ def BSL_AddMaterial(self, context):
     
     layout.label("Blender Shader Library")   
     row = layout.row(align=True)
-    row.operator("material.import_into_bsl",text="Add Material To Library", icon='ZOOMIN')
+    row.operator("material.import_into_bsl",text="Add To Library", icon='ZOOMIN')
+    row.operator("material.remove_material_from_bsl", text="Remove From Library", icon='CANCEL')
     row.operator("material.update_thumbnails",text="", icon='FILE_REFRESH')
-    row = layout.row(align=True)
-    row.operator("material.remove_material_from_bsl", text="Remove material from library", icon='CANCEL')
     layout.template_icon_view(wm, "my_previews")  
            
     
