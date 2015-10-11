@@ -252,7 +252,7 @@ def BSL_AddMaterial(self, context):
     row.operator("material.import_into_bsl",text="Add Material To Library", icon='ZOOMIN')
     row.operator("material.update_thumbnails",text="", icon='FILE_REFRESH')
     row = layout.row(align=True)
-    row.operator("material.remove_material_from_bsl", text="Remove material")
+    row.operator("material.remove_material_from_bsl", text="Remove material from library", icon='CANCEL')
     layout.template_icon_view(wm, "my_previews")  
            
     
