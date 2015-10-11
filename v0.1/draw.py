@@ -64,7 +64,7 @@ def import_materials_in_library():
     BSL_shader_library = join(library_path, 'Shader_Library.blend') # ou bpy.utils.resource_path('USER') + "scripts/addons/material_library"
     BSL_import_script = join(library_path, 'import_in_library_from_external_file.py')
     
-    #print('[BSL] Import - ', 'File:', blendfile, 'Material:', material, 'Library:', BSL_shader_library, 'Script:', BSL_import_script)
+    print('[BSL] Import - ', 'File:', blendfile, 'Material:', material, 'Library:', BSL_shader_library, 'Script:', BSL_import_script)
     
     sub = subprocess.Popen([bpy.app.binary_path, BSL_shader_library, '-b', '--python', BSL_import_script, blendfile, material])
     sub.wait()
@@ -85,10 +85,9 @@ def generate_preview():
 
 def get_enum_previews(self, context): # self et context demandés par l'API
     """EnumProperty callback"""
-    
-    return enum_previews_from_directory_items()
+    return enum_previews_from_directory_items(context.window_manager.is_generating_preview)
 
-def enum_previews_from_directory_items():
+def enum_previews_from_directory_items(is_generating_preview):
     """ N'utilise pas self et context, pour un appel externe au preset de Blender """
     enum_items = []
  
@@ -101,7 +100,7 @@ def enum_previews_from_directory_items():
     # Get the preview collection (defined in register func).
     pcoll = preview_collections["main"]
  
-    if directory == pcoll.my_previews_dir:
+    if is_generating_preview or directory == pcoll.my_previews_dir:
         return pcoll.my_previews
  
     print("Scanning thumbnails directory: %s" % directory)
@@ -142,7 +141,14 @@ class ImportIntoBSL(bpy.types.Operator):
         library_path = os.path.dirname(__file__)
         material = bpy.context.object.active_material.name # à faire avant lancement subprocess, qui n'y aura plus accès (au context du fichier courant)
         
+        context.window_manager.is_generating_preview = True
+        
+        #bpy.utils.previews.remove(preview_collections["main"])
         subprocess.Popen([bpy.app.binary_path, join(library_path, 'Shader_Library.blend'), '-b', '--python', join(library_path, 'import.py'), material])
+        
+        context.window_manager.is_generating_preview = False
+        
+        #bpy.ops.material.update_thumbnails() ### A modifier (modal ?) pour qu'il attende la fin de la génération, sans être bloquant
         
         return {"FINISHED"}
 
@@ -153,8 +159,9 @@ class UpdateThumbnails(bpy.types.Operator):
     bl_options = {"REGISTER", "INTERNAL"}
       
     def execute(self, context):
+        
         global preview_collections
-        del preview_collections["main"]
+        #del preview_collections["main"]
         preview_collections = {}
         register_pcoll_preview()
         
@@ -196,14 +203,14 @@ class BSL_panel(bpy.types.Panel):
         layout = self.layout
         wm = context.window_manager
         
-        layout.operator("material.delete_unused_materials",text="Remove", icon='CANCEL')
+        #layout.operator("material.delete_unused_materials",text="Remove", icon='CANCEL')
        
         layout.template_icon_view(wm, "my_previews")
          
         layout.label("Objects:", icon='OBJECT_DATAMODE')
         row = layout.row(align=True)
-        row.operator("object.material_slot_remove",text="Remove Material", icon='X')          
-        row.operator("material.delete_unused_materials",text="Unused")
+        #row.operator("object.material_slot_remove",text="Remove Material", icon='X')          
+        #row.operator("material.delete_unused_materials",text="Unused")
         layout.operator("object.select_linked", icon='RESTRICT_SELECT_OFF').type='MATERIAL'
         layout.operator("material.import_into_bsl", icon='APPEND_BLEND')
         layout.operator("material.update_thumbnails", icon='FILE_REFRESH')
