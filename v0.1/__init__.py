@@ -35,13 +35,6 @@ bl_info = {
 import bpy      
 
 
-# load and reload submodules
-##################################    
-
-#from . import developer_utils  # ne marche pas toujours pour moi - Lapi
-#modules = developer_utils.setup_addon_modules(__path__, __name__
-
-
 # register
 ################################## 
 
