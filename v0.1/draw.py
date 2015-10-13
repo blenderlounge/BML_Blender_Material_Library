@@ -119,7 +119,7 @@ def enum_previews_from_directory_items(is_generating_preview):
             enum_items.append((name, name, name, thumb.icon_id, i)) # 3° name en name.split('.'[0]) ne marche pas, forme incorrecte ??
  
     pcoll.my_previews = enum_items
-    print('[BSL] - Thumbnails list:', enum_items)
+    # print('[BSL] - Thumbnails list:', enum_items)
     pcoll.my_previews_dir = directory
     
     return pcoll.my_previews
