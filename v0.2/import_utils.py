@@ -17,7 +17,7 @@ def apply_material(mat_name):
  
     # Assign it to object
     if len(ob.data.materials):
-        # assign to 1st material slot
+        # assign to 1st material slot           
         ob.active_material = mat
     else:
         # no slots
@@ -34,14 +34,8 @@ def import_materials_from_files(self, context):
     mat_name = (bpy.data.window_managers["WinMan"].my_previews.split("."))[0]
     obj_list = []
     
-    for item in bpy.context.selected_objects:
-        name = item.name
-        obj_list.append(name)
-    
-    for obj in obj_list:
-        bpy.ops.object.select_all(action='DESELECT')
-        bpy.data.objects[obj].select = True
-        bpy.context.scene.objects.active = bpy.data.objects[obj]
+    if context.object.mode == 'EDIT':
+        bpy.ops.object.mode_set(mode='OBJECT')
         
         if mat_name in bpy.data.materials:
             bpy.context.active_object.active_material = bpy.data.materials[mat_name]
@@ -55,8 +49,36 @@ def import_materials_from_files(self, context):
                     directory = join(blendfile_1, SECTION)
                    
                     bpy.ops.wm.append(filename=mat_name, directory=directory)
-           
+        
             apply_material(mat_name)
+        bpy.ops.object.mode_set(mode='EDIT')
+        
+    elif context.object.mode == 'OBJECT':                
+        for item in bpy.context.selected_objects:
+            name = item.name
+            obj_list.append(name)
+        
+        for obj in obj_list:
+            bpy.ops.object.select_all(action='DESELECT')
+            bpy.data.objects[obj].select = True
+            bpy.context.scene.objects.active = bpy.data.objects[obj]
+            
+            if mat_name in bpy.data.materials:
+                bpy.context.active_object.active_material = bpy.data.materials[mat_name]
+                bpy.data.objects[obj].select = True
+            else:                  
+                blendfile_1 = join(library_path,'Shader_Library.blend')
+                source_files = [blendfile_1] # liste des fichiers ou tu va chercher les materiaux
+         
+                with bpy.data.libraries.load(blendfile_1) as (data_from, data_to):
+                    if data_from.materials:                 
+                        directory = join(blendfile_1, SECTION)
+                       
+                        bpy.ops.wm.append(filename=mat_name, directory=directory)
+                
+                apply_material(mat_name)
+        for obj in obj_list:
+            bpy.data.objects[obj].select = True
 
 
 def import_materials_in_library():
