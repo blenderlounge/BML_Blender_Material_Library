@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 '''
 Copyright (C) 2015 YOUR NAME
 YOUR@MAIL.com
@@ -21,18 +23,19 @@ Created by Lapineige, Pitiwazou, Pistiwique
 bl_info = {
     "name": "Blender Material Library (BML)",
     "description": "Create your own material library, with thumbnail preview and a simple import",
-    "author": "Lapineige, Pitiwazou, Pistiwique",
-    "version": (0, 1, 0),
+    "author": "Lapineige, Pitiwazou, Pistiwique, Matpi",
+    "version": (0, 2, 0),
     "blender": (2, 75, 0),
     "location": "3D View / Material Properties",
-    "warning": "This addon is still in development - quite stable, but be carefull with your materials",
+    "warning": "This addon is still in development - quite stable, but keep a copy of your materials",
     "wiki_url": "",
     "category": "Material" }
+
     
     
 import bpy 
 from bpy.types import AddonPreferences
-from bpy.props import StringProperty, BoolProperty     
+from bpy.props import StringProperty, BoolProperty   
 from . draw import *
 
 
@@ -107,9 +110,10 @@ def update_Cycles_PT_bml_panel(self, context):
         bpy.utils.register_class(Cycles_PT_bml_panel)        
         
         
+     
 class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
     bl_idname = __name__
-    
+
     #3DVIEW
     ui_panel = BoolProperty(
             default=True,
@@ -234,7 +238,13 @@ def register():
     update_NODE_HT_header_bml_preview(None, bpy.context)
         
     bpy.types.WindowManager.is_generating_preview = bpy.props.BoolProperty(default=False)
-
+    bpy.types.WindowManager.preview_type = bpy.props.EnumProperty(
+            items=(('1', "Sphere", ''),
+                   ('2', "Cloth", ''),
+                   ('3', "Softbox", '')),
+                   default='1',
+                   name='',
+                   update=update_preview_type)
 
 def unregister():
     unregister_pcoll_preview()
