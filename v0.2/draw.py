@@ -226,6 +226,7 @@ class Cycles_PT_bml_panel(Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_label = "Blender Material Library"
+    bl_context = "material"
 
     def draw(self, context):
         layout = self.layout
