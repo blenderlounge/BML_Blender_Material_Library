@@ -7,10 +7,10 @@ from os.path import join
 from os import remove
 
 if __name__ == '__main__':
-    material = sys.argv[5] # recupÃ¨re le nom du matÃ©riau
-    #thumbnails_directory = sys.argv[6] # recupÃ¨re le dossier de stockage des miniatures
+    material = sys.argv[5] # recupère le nom du matériau
+    #thumbnails_directory = sys.argv[6] # recupère le dossier de stockage des miniatures
 
-    bpy.data.objects["_Render_Model"].active_material = bpy.data.materials[material]
+    bpy.data.objects["_Sphere"].active_material = bpy.data.materials[material]
 
     bpy.data.materials[material].use_fake_user = False
     bpy.data.materials[material].user_clear()

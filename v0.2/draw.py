@@ -11,21 +11,15 @@ from bpy.types import Panel, Operator
 from bpy.types import WindowManager
 from bpy.props import EnumProperty
 
-preview_collections = {}
+BML_preview_collections = {}
 
-
-#### !!!!!!! 
-
-# Ne garder QUE la partie affichage dans draw
-
-#### !!!!!!!
 
         ####################################
         ####    THUMBNAILS FONCTIONS    ####
         ####################################
         
 
-class UpdateThumbnails(Operator): # à mettre dans import_utils ? - en changeant le nom 
+class UpdateThumbnails(Operator): # � mettre dans import_utils ? - en changeant le nom 
     bl_idname = "material.update_thumbnails"
     bl_label = "Update Thumbnails"
     bl_description = "(Re)generate thumbnails images. May take a while"
@@ -33,17 +27,17 @@ class UpdateThumbnails(Operator): # à mettre dans import_utils ? - en changeant
 
     def execute(self, context):
         
-        register_pcoll_preview()
+        register_BML_pcoll_preview()
 
         self.report({'INFO'}, 'Thumbnails and preview updated') # marche que si appel depuis l'UI
 
         return {"FINISHED"}
 
 def update_preview_type(self, context):
-    register_pcoll_preview()
+    register_BML_pcoll_preview()
 
 
-def get_enum_previews(self, context): # self et context demandés par l'API
+def get_enum_previews(self, context): # self et context demand�s par l'API
     """ """
     return enum_previews_from_directory_items(context.window_manager.is_generating_preview)
 
@@ -56,20 +50,22 @@ def enum_previews_from_directory_items(is_generating_preview):
 
     wm = bpy.context.window_manager
 
-    if wm.preview_type == '1':
+    if wm.preview_type == '_Sphere':
         thumbnail_type= "Sphere"
-    elif wm.preview_type == '2':
+    elif wm.preview_type == '_Cloth':
         thumbnail_type= "Cloth"
-    elif wm.preview_type == '3':
+    elif wm.preview_type == '_Softbox':
         thumbnail_type= "Softbox"
+    elif wm.preview_type == '_Hair':
+        thumbnail_type= "Hair"
         
     directory = join(os.path.dirname(__file__), "Thumbnails",thumbnail_type )
 
     # Get the preview collection (defined in register func).
-    pcoll = preview_collections["main"]
+    pcoll = BML_preview_collections["main"]
 
-    if is_generating_preview or directory == pcoll.my_previews_dir:
-        return pcoll.my_previews
+    if is_generating_preview or directory == pcoll.BML_previews_dir:
+        return pcoll.BML_previews
 
     print("[BML] Scanning thumbnails directory: %s" % directory)
 
@@ -86,13 +82,11 @@ def enum_previews_from_directory_items(is_generating_preview):
             thumb = pcoll.load(filepath, filepath, 'IMAGE')
             enum_items.append((name, name, name, thumb.icon_id, i)) # 3 bpy.utils.resource_path('USER') + "scripts/addons/material_lib
 
-    pcoll.my_previews = enum_items ## Pourquoi cette ligne + return ?
+    pcoll.BML_previews = enum_items
     
     # print('[BML] - Thumbnails list:', enum_items)
     print('[BML] - Thumbnails list:', [item[0] for item in enum_items], 'Length:', len(enum_items))
-    pcoll.my_previews_dir = directory
-
-    return pcoll.my_previews
+    pcoll.BML_previews_dir = directory
 
 
         ######################
@@ -106,21 +100,16 @@ class VIEW3D_PT_view_3d_bml(Panel):
     bl_region_type = 'UI'
     bl_label = "Blender Material Library"
 
-
     def draw(self, context):
         layout = self.layout
         wm = context.window_manager
 
-        # layout.operator("material.delete_unused_materials",text="Remove", icon='CANCEL')
-        # layout.prop(wm, "preview_type", text="")
         if bpy.context.selected_objects:
             layout.prop(wm, "preview_type")
-            layout.template_icon_view(wm, "my_previews")
+            layout.template_icon_view(wm, "BML_previews")
             layout.operator("object.select_linked", icon='RESTRICT_SELECT_OFF').type='MATERIAL'
         else:
-            layout.label("No mesh selected", icon='ERROR')
-
-        
+            layout.label("No mesh selected", icon='ERROR')        
 
 
 class VIEW3D_PT_tools_bml(Panel):
@@ -129,21 +118,16 @@ class VIEW3D_PT_tools_bml(Panel):
     bl_category = "BML"
     bl_label = "Blender Material Library"
 
-
     def draw(self, context):
         layout = self.layout
         wm = context.window_manager
 
-
         if bpy.context.selected_objects:
             layout.prop(wm, "preview_type")        
-            layout.template_icon_view(wm, "my_previews")
+            layout.template_icon_view(wm, "BML_previews")
             layout.operator("object.select_linked", icon='RESTRICT_SELECT_OFF').type='MATERIAL' 
         else:
             layout.label("No mesh selected", icon='ERROR')
-
-
-
 
 
 class view3d_header_preview_bml(bpy.types.Menu):
@@ -153,7 +137,7 @@ class view3d_header_preview_bml(bpy.types.Menu):
         layout = self.layout
         wm = context.window_manager
         if bpy.context.selected_objects:
-            layout.template_icon_view(wm, "my_previews")
+            layout.template_icon_view(wm, "BML_previews")
         else:
             layout.label("No mesh selected", icon='ERROR')
 
@@ -176,16 +160,15 @@ class NODE_PT_tools_bml(Panel):
         object = bpy.context.active_object.name
         row = layout.row(align=True)
         if bpy.data.objects[object].active_material:
-            row.menu("material.import_into_bml_container")# , icon='APPEND_BLEND') # icone à changer
+            row.menu("material.import_into_bml_container")# , icon='APPEND_BLEND') # icone � changer
             row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
             row.operator("object.material_slot_remove",text="Remove", icon='X')
             row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')
         if bpy.context.selected_objects:
             layout.prop(wm, "preview_type")         
-            layout.template_icon_view(wm, "my_previews")
+            layout.template_icon_view(wm, "BML_previews")
         else:
             layout.label("No mesh selected", icon='ERROR')
-        # row.operator("material.import_into_bml", text="Add", icon='APPEND_BLEND')
         layout.operator("material.delete_unused_materials", icon='X')
 
 
@@ -196,23 +179,21 @@ class NODE_PT_ui_bml(Panel):
     bl_label = "Blender Material Library"
 
     def draw(self, context):
-
         layout = self.layout
-
         wm = context.window_manager
         object = bpy.context.active_object.name
+        
         row = layout.row(align=True)
         if bpy.data.objects[object].active_material:
-            row.prop(wm, "preview_type", text="")# , icon='APPEND_BLEND') # icone à changer
+            row.prop(wm, "preview_type", text="")
             row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
             row.operator("object.material_slot_remove",text="Remove", icon='X')
             row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')
         if bpy.context.selected_objects:
 
-            layout.template_icon_view(wm, "my_previews")
+            layout.template_icon_view(wm, "BML_previews")
         else:
             layout.label("No mesh selected", icon='ERROR')
-        # row.operator("material.import_into_bml", text="Add", icon='APPEND_BLEND')
         layout.operator("material.delete_unused_materials",text="Delete unused materials", icon='X')
 
 
@@ -223,13 +204,13 @@ class node_header_preview_bml(bpy.types.Menu):
     def draw(self, context):
         layout = self.layout
         wm = context.window_manager
+        
         if bpy.context.selected_objects:
-            layout.template_icon_view(wm, "my_previews")
+            layout.template_icon_view(wm, "BML_previews")
         else:
             layout.label("No mesh selected", icon='ERROR')
 
-def NODE_HT_header_bml_preview(self, context):
-    
+def NODE_HT_header_bml_preview(self, context):    
     layout = self.layout
     wm = context.window_manager
     
@@ -240,13 +221,10 @@ def NODE_HT_header_bml_preview(self, context):
         layout.label("No mesh selected", icon='ERROR')
 
 
-###### CLASS ######
-
 class Cycles_PT_bml_panel(Panel):
     '''Blender Material Library preview'''
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
-
     bl_label = "Blender Material Library"
 
     def draw(self, context):
@@ -254,44 +232,43 @@ class Cycles_PT_bml_panel(Panel):
         wm = context.window_manager
         row = layout.row(align=True)
         object = bpy.context.active_object.name
+        
         if bpy.data.objects[object].active_material:
-            #row.prop(wm, "preview_type", text="")# , icon='APPEND_BLEND') # icone à changer
             row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
             row.operator("material.remove_material_from_bml", text="Remove", icon='X')
             row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')
             
         if bpy.context.selected_objects:
             layout.prop(wm, "preview_type", text="Preview type")         
-            layout.template_icon_view(wm, "my_previews")
+            layout.template_icon_view(wm, "BML_previews")
             layout.operator("material.delete_unused_materials",text="Delete unused materials")
             layout.operator("object.select_linked", icon='RESTRICT_SELECT_OFF').type='MATERIAL' 
         else:
-            layout.label("No mesh selected", icon='ERROR')
-               
+            layout.label("No mesh selected", icon='ERROR')               
 
 
-def register_pcoll_preview():
+def register_BML_pcoll_preview():
     wm = bpy.context.window_manager
 
-    global preview_collections
-    for pcoll in preview_collections.values():
+    global BML_preview_collections
+    for pcoll in BML_preview_collections.values():
         bpy.utils.previews.remove(pcoll)
         
-    WindowManager.my_previews = EnumProperty( # Nom à changer - pas clair, trop de preview dans les noms
+    WindowManager.BML_previews = EnumProperty(
             items=get_enum_previews,
             update=import_materials_from_files)
     
     pcoll = bpy.utils.previews.new() # pcoll pour preview collection
-    pcoll.my_previews_dir = ""
-    pcoll.my_previews = ()
+    pcoll.BML_previews_dir = ""
+    pcoll.BML_previews = ()
     
-    preview_collections = {}
-    preview_collections["main"] = pcoll
+    BML_preview_collections = {}
+    BML_preview_collections["main"] = pcoll
 
-def unregister_pcoll_preview():
+def unregister_BML_pcoll_preview():
 
-    del WindowManager.my_previews
+    del WindowManager.BLM_previews
 
-    for pcoll in preview_collections.values():
+    for pcoll in BML_preview_collections.values():
         bpy.utils.previews.remove(pcoll)
-    preview_collections.clear()
+    BML_preview_collections.clear()

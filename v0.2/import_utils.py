@@ -8,8 +8,6 @@ from os import listdir
 from os.path import isfile, join
 from bpy.types import Operator
 
-preview_collections = {}
-
         #########################
         ####    FONCTIONS    ####
         #########################
@@ -40,7 +38,7 @@ def import_materials_from_files(self, context):
     library_path = os.path.dirname(__file__)
 
     SECTION   = "Material" # on importe un materiau
-    mat_name = (bpy.data.window_managers["WinMan"].my_previews.split("."))[0]
+    mat_name = (bpy.data.window_managers["WinMan"].BML_previews.split("."))[0]
     obj_list = []
     obj_name = bpy.context.active_object.name
 
@@ -52,7 +50,7 @@ def import_materials_from_files(self, context):
         for f in bm.faces:
             if f.select:
                 selected_face += 1
-
+                
         assign_mat = False
         if selected_face != 0:
             assign_mat = True
@@ -141,27 +139,31 @@ class ImportIntoBML(Operator):
     def execute(self, context): # on attends un changement dans le dossier des miniatures
         
         import_materials_in_library()
-
-        wm = bpy.context.window_manager
-
-        if wm.preview_type == '1':
-            BML_render_type = "_Render_Model"
-        elif wm.preview_type == '2':
-            BML_render_type = "_Cloth_Model"
-        elif wm.preview_type == '3':
-            BML_render_type = "_Light_Model"
-        #### Inconsistant avec la suite + inutile de passer par des nombres, autant attribuer directement des valeurs exploitables (supprime tout les if pr√©c√©dents, limite les erreurs, explicite le code) # d'ailleurs il y avait inversion entre 1 et 3, la preuve que c'est un probl√®me
-        # incoh√©rence entre type et nom du r√©pertoire, autant simplifier en gardant le m√™me nom que le r√©pertoire, et dans l'UI
         
+        material = bpy.context.object.active_material.name                    
+        library_path = os.path.dirname(os.path.abspath(__file__))
+        wm = bpy.context.window_manager  
+        BML_render_type = wm.preview_type  
+    
+        if BML_render_type == "_Sphere":
+            thumbnail_directory = "Sphere"
+        elif BML_render_type == "_Cloth":
+            thumbnail_directory = "Cloth" 
+        elif BML_render_type == "_Softbox":
+            thumbnail_directory = "Softbox"
+        elif BML_render_type == "_Hair":
+            thumbnail_directory = "Hair"
+        else:
+            thumbnail_directory = "Sphere"
+
         
-        library_path = os.path.dirname(__file__)
-        material = bpy.context.object.active_material.name # √† faire avant lancement subprocess, qui n'y aura plus acc√®s (au context du fichier courant)
+        BML_thumbnails_directory = join(library_path, 'Thumbnails', thumbnail_directory)
+        BML_shader_library = join(library_path, 'Shader_Library.blend') # ou bpy.utils.resource_path('USER') + "scripts/addons/material_library"
+        BML_generate_script = join(library_path, 'generate_thumbnails.py')
 
-        #context.window_manager.is_generating_preview = True # A SUPPRIMER, renvoi rien pendant rendu, fait foirer tout
+        print('[BSL] Generate Thumbnails - ', 'Directory:', BML_thumbnails_directory, 'Material:',material, 'Library:', BML_shader_library, 'Script:',BML_generate_script)
 
-        #bpy.utils.previews.remove(preview_collections["main"])
-        subprocess.Popen([bpy.app.binary_path, join(library_path, 'Shader_Library.blend'), '-b', '--python', join(library_path, 'import.py'), material, BML_render_type])
-        #sub.wait() # Blocant pour update
+        sub = subprocess.Popen([bpy.app.binary_path, BML_shader_library, '-b', '--python', BML_generate_script, material, BML_thumbnails_directory, BML_render_type])
 
         return {'FINISHED'}
 
@@ -172,7 +174,7 @@ class ImportIntoBMLcontainer(Operator):
     bl_options = {"REGISTER"}
     
     def is_thumbnails_updated(self):
-        list_files = os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Cloth')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Softbox')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Sphere'))
+        list_files = os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Cloth')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Softbox')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Sphere')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Hair'))
         self.thumbs_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')]
         
         return self.thumbs_list != self.thumbnails_directory_list
@@ -180,13 +182,13 @@ class ImportIntoBMLcontainer(Operator):
     def modal(self, context, event):
         
         if self.is_thumbnails_updated(): # on attends un changement dans le dossier des miniatures
-            self.report({'INFO'}, 'Thumbnails render done - Updating preview...') # Pas visible normalement, car update tr√®s rapide
+            self.report({'INFO'}, 'Thumbnails render done - Updating preview...') # Pas visible normalement, car update trËs rapide
             
             bpy.ops.material.update_thumbnails()
             
             self.report(
                 {'INFO'}, 'Thumbnails updated. Created: {0} - Orphaned: {1}'.format(
-                len(self.thumbs_list) - len(self.thumbnails_directory_list), # attention plus valable en cas de suppression ant√©rieure au calcul
+                len(self.thumbs_list) - len(self.thumbnails_directory_list), # attention plus valable en cas de suppression antÈrieure au calcul
                 'TODO')
             )
             
@@ -198,15 +200,15 @@ class ImportIntoBMLcontainer(Operator):
 
     def invoke(self, context, event):
         
-        # g√©n√©ration de la liste des miniatures
-        list_files = os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Cloth')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Softbox')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Sphere'))
-        self.thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')] # il faut la r√©initialiser √† chaque lancement, en cas de mofication # filtrage idem pr√©c√©dent
+        # gÈnÈration de la liste des miniatures
+        list_files = os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Cloth')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Softbox')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Sphere')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Hair'))
+        self.thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')] # il faut la rÈinitialiser ‡ chaque lancement, en cas de mofication # filtrage idem prÈcÈdent
         
         
         #print('LIST:', self.thumbnails_directory_list, 'Length:', len(thumbnails_directory_list))
 
         self.report({'INFO'}, 'Thumbnails Rendering started...')
-        bpy.ops.material.import_into_bml() # execut√© la premi√®re fois uniquement
+        bpy.ops.material.import_into_bml() # executÈ la premiËre fois uniquement
 
         context.window_manager.modal_handler_add(self)
 
@@ -247,19 +249,21 @@ class RemoveMaterialFromBML(Operator):
         remove_material_from_library()
         
         bpy.ops.material.update_thumbnails()
-        self.report({'INFO'}, 'Thumbnails updated. Removed: 1') # nombre √† changer en cas de nettoyage multiple
+        self.report({'INFO'}, 'Thumbnails updated. Removed: 1') # nombre ‡ changer en cas de nettoyage multiple
 
         return{"FINISHED"}
 
 def remove_material_from_library():
     wm = bpy.context.window_manager
 
-    if wm.preview_type == '1':
+    if wm.preview_type == '_Sphere':
         thumbnail_type = "Sphere"
-    elif wm.preview_type == '2':
+    elif wm.preview_type == '_Cloth':
         thumbnail_type= "Cloth"
-    elif wm.preview_type == '3':
+    elif wm.preview_type == '_Softbox':
         thumbnail_type= "Softbox"
+    elif wm.preview_type == '_Hair':
+        thumbnail_type= "Hair"
 
     library_path = os.path.dirname(os.path.abspath(__file__))
     material = bpy.context.object.active_material.name

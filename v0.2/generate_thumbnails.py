@@ -6,25 +6,34 @@ import os
 from os.path import join
 
 if __name__ == '__main__':
-    material = sys.argv[5] # rÃ©cupÃ¨re le nom du matÃ©riau
-    thumbnails_directory = sys.argv[6] # rÃ©cupÃ¨re le dossier de stockage des miniatures
+    material = sys.argv[5] # récupère le nom du matériau
+    thumbnails_directory = sys.argv[6] # récupère le dossier de stockage des miniatures
     render_type = sys.argv[7]
 
-    if render_type == "_Render_Model":
+    if render_type == "_Sphere":
         bpy.context.scene.layers[0] = True
         bpy.context.scene.layers[1] = True
         bpy.context.scene.layers[2] = False
         bpy.context.scene.layers[3] = False
-    elif render_type == "_Cloth_Model":
+        bpy.context.scene.layers[4] = False
+    elif render_type == "_Cloth":
         bpy.context.scene.layers[0] = True
         bpy.context.scene.layers[1] = False
         bpy.context.scene.layers[2] = True
         bpy.context.scene.layers[3] = False
-    elif render_type == "_Light_Model":
+        bpy.context.scene.layers[4] = False
+    elif render_type == "_Softbox":
         bpy.context.scene.layers[0] = True
         bpy.context.scene.layers[1] = False
         bpy.context.scene.layers[2] = False
         bpy.context.scene.layers[3] = True
+        bpy.context.scene.layers[4] = False
+    elif render_type == "_Hair":
+        bpy.context.scene.layers[0] = True
+        bpy.context.scene.layers[1] = False
+        bpy.context.scene.layers[2] = False
+        bpy.context.scene.layers[3] = False
+        bpy.context.scene.layers[4] = True
 
     bpy.data.objects[render_type].active_material = bpy.data.materials[material]
 
@@ -40,13 +49,13 @@ if __name__ == '__main__':
     for item in bpy.context.object.data.body:
         bpy.ops.font.delete()
 
-    # insert le nom du matÃ©riau de l'objet Ã  rendre
+    # insert le nom du matériau de l'objet à rendre
     bpy.ops.font.text_insert(text=material)
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
     bpy.ops.object.select_all(action='DESELECT')
-    # Selection de l'objet Ã  rendre
+    # Selection de l'objet à rendre
     bpy.data.objects[render_type].select = True
     # passage de _render_Model en objet actif
     bpy.context.scene.objects.active = bpy.data.objects[render_type]

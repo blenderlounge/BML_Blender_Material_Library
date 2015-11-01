@@ -4,7 +4,7 @@
 Copyright (C) 2015 YOUR NAME
 YOUR@MAIL.com
 
-Created by Lapineige, Pitiwazou, Pistiwique
+Created by Lapineige, Pitiwazou, Pistiwique, Matpi
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -228,7 +228,7 @@ class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
     
 def register():
     bpy.utils.register_module(__name__) 
-    register_pcoll_preview()
+    register_BML_pcoll_preview()
     update_VIEW3D_PT_view_3d_bml(None, bpy.context)
     update_VIEW3D_PT_tools_bml(None, bpy.context)
     update_VIEW3D_HT_header_bml_preview(None, bpy.context)
@@ -239,15 +239,16 @@ def register():
         
     bpy.types.WindowManager.is_generating_preview = bpy.props.BoolProperty(default=False)
     bpy.types.WindowManager.preview_type = bpy.props.EnumProperty(
-            items=(('1', "Sphere", ''),
-                   ('2', "Cloth", ''),
-                   ('3', "Softbox", '')),
-                   default='1',
+            items=(('_Sphere', "Sphere", ''),
+                   ('_Cloth', "Cloth", ''),
+                   ('_Softbox', "Softbox", ''),
+                   ('_Hair', "Hair", "")),
+                   default='_Sphere',
                    name='',
                    update=update_preview_type)
 
 def unregister():
-    unregister_pcoll_preview()
+    unregister_BML_pcoll_preview()
     bpy.types.VIEW3D_HT_header.remove(VIEW3D_HT_header_bml_preview)  
     bpy.types.VIEW3D_HT_header.remove(NODE_HT_header_bml_preview)   
     bpy.utils.unregister_module(__name__)   
