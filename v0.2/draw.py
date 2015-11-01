@@ -230,17 +230,16 @@ class Cycles_PT_bml_panel(Panel):
 
     def draw(self, context):
         layout = self.layout
-        wm = context.window_manager
-        row = layout.row(align=True)
+        wm = context.window_manager     
         object = bpy.context.active_object.name
-        
-        if bpy.data.objects[object].active_material:
-            row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
-            row.operator("material.remove_material_from_bml", text="Remove", icon='X')
-            row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')
             
         if bpy.context.selected_objects:
-            layout.prop(wm, "preview_type", text="Preview type")         
+            layout.prop(wm, "preview_type", text="Preview type")
+            if bpy.data.objects[object].active_material:
+                row = layout.row(align=True)
+                row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
+                row.operator("material.remove_material_from_bml", text="Remove", icon='X')
+                row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')         
             layout.template_icon_view(wm, "BML_previews")
             layout.operator("material.delete_unused_materials",text="Delete unused materials")
             layout.operator("object.select_linked", icon='RESTRICT_SELECT_OFF').type='MATERIAL' 
