@@ -2,8 +2,8 @@
 
 import bpy
 from bpy.types import Panel
-from . bml_operators import(DeleteUnusedMaterials,
-                            RemoveMaterialFromBML)
+from . operators import(DeleteUnusedMaterials,
+                        RemoveMaterialFromBML)
 
 
 #####################################################

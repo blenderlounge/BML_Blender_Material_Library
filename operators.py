@@ -6,9 +6,8 @@ import subprocess
 from os.path import join
 from os import listdir
 from bpy.types import Operator
-from . bml_preview_utils import register_BML_pcoll_preview
-from . bml_import_utils import add_in_bml
-
+from . preview_utils import register_BML_pcoll_preview
+from . import_utils import add_in_bml
 
 
 class AddInBMLcontainer(Operator):

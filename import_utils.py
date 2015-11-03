@@ -5,6 +5,7 @@ import bmesh
 import os
 import subprocess
 from os.path import join
+from bpy.types import Operator
 
 
 
@@ -116,7 +117,8 @@ def add_materials_to_library():
     sub.wait()
 
 
-def add_in_bml():        
+def add_in_bml():
+        
     add_materials_to_library()
     
     material = bpy.context.object.active_material.name                    

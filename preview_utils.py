@@ -7,24 +7,10 @@ from os import listdir
 from os.path import join
 from bpy.types import WindowManager
 from bpy.props import EnumProperty
-from . bml_import_utils import import_materials_from_BML
+from . import_utils import import_materials_from_BML
 
 
 BML_preview_collections = {}
-
-
-#class UpdateThumbnails(bpy.types.Operator):
-#    bl_idname = "material.update_thumbnails"
-#    bl_label = "Update Thumbnails"
-#    bl_description = "(Re)generate thumbnails images. May take a while"
-#    bl_options = {'REGISTER', 'INTERNAL'}
-
-#    def execute(self, context):
-#        
-#        register_BML_pcoll_preview()
-#        self.report({'INFO'}, "Thumbnails and preview updated") # marche que si appel depuis l'UI
-
-#        return {'FINISHED'}
 
 
 def update_preview_type(self, context):
@@ -105,7 +91,7 @@ def register_BML_pcoll_preview():
 
 def unregister_BML_pcoll_preview():
 
-    del WindowManager.BLM_previews
+    del WindowManager.BML_previews
 
     for pcoll in BML_preview_collections.values():
         bpy.utils.previews.remove(pcoll)

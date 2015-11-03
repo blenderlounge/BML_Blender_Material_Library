@@ -36,10 +36,10 @@ bl_info = {
 import bpy 
 from bpy.types import AddonPreferences
 from bpy.props import StringProperty, BoolProperty   
-from . bml_ui import *
-from . bml_preview_utils import (register_BML_pcoll_preview, 
-                                 unregister_BML_pcoll_preview, 
-                                 update_preview_type)
+from . ui import *
+from . preview_utils import (register_BML_pcoll_preview, 
+                             unregister_BML_pcoll_preview, 
+                             update_preview_type)
 
 
 #----VIEW_3D----#
