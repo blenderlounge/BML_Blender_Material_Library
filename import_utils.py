@@ -106,7 +106,7 @@ def add_materials_to_library():
     blendfile = join(library_path, 'BML_temp.blend')
     material = bpy.context.object.active_material.name
 
-    bpy.ops.wm.save_mainfile(filepath = blendfile)
+    bpy.ops.wm.save_as_mainfile(filepath = blendfile, copy=True)
 
     BML_shader_library = join(library_path, 'Shader_Library.blend') # ou bpy.utils.resource_path('USER') + "scripts/addons/material_library"
     BML_import_script = join(library_path, 'add_in_library_from_external_file.py')
