@@ -49,17 +49,9 @@ def enum_previews_from_directory_items(is_generating_preview):
         return enum_items
 
     wm = bpy.context.window_manager
-
-    if wm.preview_type == '_Sphere':
-        thumbnail_type= "Sphere"
-    elif wm.preview_type == '_Cloth':
-        thumbnail_type= "Cloth"
-    elif wm.preview_type == '_Softbox':
-        thumbnail_type= "Softbox"
-    elif wm.preview_type == '_Hair':
-        thumbnail_type= "Hair"
+    thumbnail_type = wm.preview_type
         
-    directory = join(os.path.dirname(__file__), "Thumbnails",thumbnail_type )
+    directory = join(os.path.dirname(__file__), "Thumbnails",thumbnail_type[1:] )
 
     # Get the preview collection (defined in register func).
     pcoll = BML_preview_collections["main"]
@@ -243,6 +235,17 @@ class Cycles_PT_bml_panel(Panel):
             layout.template_icon_view(wm, "BML_previews")
             layout.operator("material.delete_unused_materials",text="Delete unused materials")
             layout.operator("object.select_linked", icon='RESTRICT_SELECT_OFF').type='MATERIAL' 
+            
+            list_files = os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Cloth')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Softbox')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Sphere')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Hair'))
+            thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')] 
+                                              
+            row = layout.row(align=True)
+            row.label("Change material name")
+            row.prop(wm, "new_name")
+            if wm.new_name + ".jpeg" in thumbnails_directory_list:  
+                layout.label('" ' + wm.new_name + ' " already exist', icon='ERROR')
+            else:
+                row.operator("material.change_name_in_blm", text="", icon='FILE_TICK')
         else:
             layout.label("No mesh selected", icon='ERROR')               
 

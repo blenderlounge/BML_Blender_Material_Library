@@ -247,11 +247,14 @@ def register():
                    name='',
                    update=update_preview_type)
     bpy.types.WindowManager.replace_rename = bpy.props.EnumProperty(
-            items=(('replace', "Replace", "replace the material in BLM"),
-                   ('rename', "Rename", "rename the material to add")),
+            items=(('replace', "Replace in BLM", "Replace the material in BLM by the current material"),
+                   ('rename', "Change name to add", "Change the material's name to add in BLM")),
                    default='rename',
                    name="") 
-
+    bpy.types.WindowManager.new_name = bpy.props.StringProperty(
+            default="",
+            name="")
+    
 def unregister():
     unregister_BML_pcoll_preview()
     bpy.types.VIEW3D_HT_header.remove(VIEW3D_HT_header_bml_preview)  
