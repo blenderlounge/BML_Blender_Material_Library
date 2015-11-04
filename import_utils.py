@@ -242,7 +242,7 @@ class InitImportIntoBML(bpy.types.Operator):
         wm = context.window_manager
         layout = self.layout
         col = layout.column()
-        col.label(context.object.active_material.name + " already exist", icon='ERROR')
+        col.label('" ' + context.object.active_material.name + ' "' + " already exist", icon='ERROR')
         row = col.row(align=True)
         row.prop(wm, "replace_rename", text=" ", expand=True)
         row = col.row()
