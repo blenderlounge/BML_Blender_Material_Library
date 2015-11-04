@@ -268,12 +268,13 @@ def rename_mat_in_blm():
     BML_generate_script = join(library_path, 'rename_material_in_library.py')
 
     print('[BSL] Generate Thumbnails - ', 'Directory:', BML_thumbnails_directory, 'Material:',material, 'Library:', BML_shader_library, 'Script:',BML_generate_script)
-
+    
+    os.remove(join(BML_thumbnails_directory, material + ".jpeg"))
+    
     sub = subprocess.Popen([bpy.app.binary_path, BML_shader_library, '-b', '--python', BML_generate_script, material, BML_thumbnails_directory, BML_render_type, new_name])
     sub.wait()
     
-    wm.new_name = ""
-    os.remove(join(BML_thumbnails_directory, material + ".jpeg"))
+    wm.new_name = ""   
         
         
 class ChangeNameInBLM(Operator):
