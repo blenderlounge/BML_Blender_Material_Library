@@ -254,7 +254,7 @@ class InitImportIntoBML(bpy.types.Operator):
 
 def rename_mat_in_blm():
         
-    material = bpy.context.object.active_material.name                    
+    material = bpy.data.window_managers["WinMan"].BML_previews.split(".")[0]                   
     library_path = os.path.dirname(os.path.abspath(__file__))
     wm = bpy.context.window_manager  
     BML_render_type = wm.preview_type 
