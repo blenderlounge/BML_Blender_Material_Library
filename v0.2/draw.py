@@ -267,7 +267,7 @@ def register_BML_pcoll_preview():
 
 def unregister_BML_pcoll_preview():
 
-    del WindowManager.BLM_previews
+    del WindowManager.BML_previews
 
     for pcoll in BML_preview_collections.values():
         bpy.utils.previews.remove(pcoll)
