@@ -150,18 +150,17 @@ class NODE_PT_tools_bml(Panel):
         layout = self.layout
         wm = context.window_manager
         object = bpy.context.active_object.name
-        row = layout.row(align=True)
-        if bpy.data.objects[object].active_material:
-            row.menu("material.import_into_bml_container")# , icon='APPEND_BLEND') # icone à changer
-            row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
-            row.operator("object.material_slot_remove",text="Remove", icon='X')
-            row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')
+        
         if bpy.context.selected_objects:
-            layout.prop(wm, "preview_type")         
+            layout.prop(wm, "preview_type", text="Preview type")
+            if bpy.data.objects[object].active_material:
+                row = layout.row(align=True)
+                row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
+                row.operator("material.remove_material_from_bml", text="Remove", icon='X')
+                row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')         
             layout.template_icon_view(wm, "BML_previews")
         else:
             layout.label("No mesh selected", icon='ERROR')
-        layout.operator("material.delete_unused_materials", icon='X')
 
 
 
@@ -175,18 +174,16 @@ class NODE_PT_ui_bml(Panel):
         wm = context.window_manager
         object = bpy.context.active_object.name
         
-        row = layout.row(align=True)
-        if bpy.data.objects[object].active_material:
-            row.prop(wm, "preview_type", text="")
-            row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
-            row.operator("object.material_slot_remove",text="Remove", icon='X')
-            row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')
         if bpy.context.selected_objects:
-
+            layout.prop(wm, "preview_type", text="Preview type")
+            if bpy.data.objects[object].active_material:
+                row = layout.row(align=True)
+                row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
+                row.operator("material.remove_material_from_bml", text="Remove", icon='X')
+                row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')         
             layout.template_icon_view(wm, "BML_previews")
         else:
             layout.label("No mesh selected", icon='ERROR')
-        layout.operator("material.delete_unused_materials",text="Delete unused materials", icon='X')
 
 
 class node_header_preview_bml(bpy.types.Menu):
