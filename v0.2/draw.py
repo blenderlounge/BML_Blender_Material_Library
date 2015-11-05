@@ -162,7 +162,7 @@ class NODE_PT_tools_bml(Panel):
         if bpy.data.objects[object].active_material:
             row.menu("material.import_into_bml_container")# , icon='APPEND_BLEND') # icone à changer
             row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
-            row.operator("object.material_slot_remove",text="Remove", icon='X')
+            row.operator("material.remove_material_from_bml",text="Remove", icon='X')
             row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')
         if bpy.context.selected_objects:
             layout.prop(wm, "preview_type")         
@@ -187,7 +187,7 @@ class NODE_PT_ui_bml(Panel):
         if bpy.data.objects[object].active_material:
             row.prop(wm, "preview_type", text="")
             row.operator("material.import_into_bml_container", text="Add", icon='APPEND_BLEND')
-            row.operator("object.material_slot_remove",text="Remove", icon='X')
+            row.operator("material.remove_material_from_bml",text="Remove", icon='X')
             row.operator("material.update_thumbnails", text="", icon='FILE_REFRESH')
         if bpy.context.selected_objects:
 
