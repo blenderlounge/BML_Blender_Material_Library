@@ -3,7 +3,7 @@
 import bpy
 import os
 import subprocess
-from os.path import join
+from os.path import isdir, isfile, join
 from os import listdir
 from bpy.types import Operator
 from . preview_utils import register_BML_pcoll_preview
@@ -81,10 +81,14 @@ class InitImportIntoBML(bpy.types.Operator):
             return {'FINISHED'}
     
     def draw(self, context):
-        wm = context.window_manager
+        library_path = os.path.dirname(os.path.abspath(__file__))
+        material = bpy.context.object.active_material.name
+        thumbnail_folder = [f for f in listdir(join(library_path, 'Thumbnails')) if isfile(join(library_path, 'Thumbnails', f, material + ".jpeg"))]
+        wm = context.window_manager        
         layout = self.layout
+        
         col = layout.column()
-        col.label('" ' + context.object.active_material.name + ' "' + " already exist", icon='ERROR')
+        col.label('" ' + context.object.active_material.name + '" already exist as a " ' + ''.join(thumbnail_folder) + ' " preview type' , icon='ERROR')
         row = col.row(align=True)
         row.prop(wm, "replace_rename", text=" ", expand=True)
         row = col.row()
@@ -97,7 +101,8 @@ class InitImportIntoBML(bpy.types.Operator):
         if context.object.active_material.name + ".jpeg" in self.thumbnails_directory_list:
             self.new_name = " "
             context.window_manager.replace_rename = 'rename'
-            return context.window_manager.invoke_props_dialog(self) 
+            dpi_value = bpy.context.user_preferences.system.dpi
+            return context.window_manager.invoke_props_dialog(self, width=dpi_value*5, height=100) 
         else:
             bpy.ops.material.add_in_bml_container('INVOKE_DEFAULT')
             
@@ -205,8 +210,11 @@ class RemoveMaterialFromBML(Operator):
         material = bpy.context.object.active_material.name
         
         BML_shader_library = join(library_path, 'Shader_Library.blend')
-        BML_generate_script = join(library_path, 'remove_material_from_library.py')
-        BML_thumbnails_directory = join(library_path, 'Thumbnails', thumbnail_type[1:])
+        BML_generate_script = join(library_path, 'remove_material_from_library.py')    
+                         
+        thumbnail_folder = [f for f in listdir(join(library_path, 'Thumbnails')) if isfile(join(library_path, 'Thumbnails', f, material + ".jpeg"))] 
+        
+        BML_thumbnails_directory = join(library_path, 'Thumbnails', ''.join(thumbnail_folder))
         thumbnail_remove = join(BML_thumbnails_directory, material + '.jpeg')
         
         os.remove(thumbnail_remove)
