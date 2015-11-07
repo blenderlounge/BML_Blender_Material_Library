@@ -248,7 +248,7 @@ def register():
                    update=update_preview_type)
     bpy.types.WindowManager.replace_rename = bpy.props.EnumProperty(
             items=(('replace', "Replace in BLM", "Replace the material in BLM by the current material"),
-                   ('rename', "Change name to add", "Change the material's name to add in BLM")),
+                   ('rename', "Rename before adding", "Change the material's name to add in BLM")),
                    default='rename',
                    name="") 
     bpy.types.WindowManager.new_name = bpy.props.StringProperty(
