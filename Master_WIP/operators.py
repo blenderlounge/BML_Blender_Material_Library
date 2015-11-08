@@ -207,7 +207,7 @@ class RemoveMaterialFromBML(Operator):
         thumbnail_type = wm.preview_type
 
         library_path = os.path.dirname(os.path.abspath(__file__))
-        material = bpy.context.object.active_material.name
+        material = bpy.data.window_managers["WinMan"].BML_previews.split(".jpeg")[0]
         
         BML_shader_library = join(library_path, 'Shader_Library.blend')
         BML_generate_script = join(library_path, 'remove_material_from_library.py')    
@@ -226,3 +226,16 @@ class RemoveMaterialFromBML(Operator):
         self.report({'INFO'}, "Thumbnails updated. Removed: 1") # nombre à changer en cas de nettoyage multiple
 
         return {'FINISHED'}
+    
+    def draw(self, context):
+        wm = context.window_manager        
+        layout = self.layout
+        material = bpy.data.window_managers["WinMan"].BML_previews.split(".jpeg")[0]
+        
+        col = layout.column()
+        col.label("Remove " + '" ' + material + ' "', icon='ERROR')
+        col.label("     It will not longer exist in BML")
+        
+    def invoke(self, context, event):
+        dpi_value = bpy.context.user_preferences.system.dpi
+        return context.window_manager.invoke_props_dialog(self, width=dpi_value*3, height=100) 
