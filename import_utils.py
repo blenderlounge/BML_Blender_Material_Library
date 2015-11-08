@@ -369,21 +369,37 @@ class RemoveMaterialFromBML(Operator):
 
         return{"FINISHED"}
 
+    def draw(self, context):
+        wm = context.window_manager        
+        layout = self.layout
+        material = bpy.data.window_managers["WinMan"].BML_previews.split(".jpeg")[0]
+        
+        col = layout.column()
+        col.label("Remove " + '" ' + material + ' "', icon='ERROR')
+        col.label("     It will not longer exist in BML")
+        
+    def invoke(self, context, event):
+        dpi_value = bpy.context.user_preferences.system.dpi
+        return context.window_manager.invoke_props_dialog(self, width=dpi_value*3, height=100) 
+        
+
 def remove_material_from_library():
     wm = bpy.context.window_manager
     thumbnail_type = wm.preview_type
 
     library_path = os.path.dirname(os.path.abspath(__file__))
-    material = bpy.context.object.active_material.name
+    material = bpy.data.window_managers["WinMan"].BML_previews.split(".jpeg")[0]
     
     BML_shader_library = join(library_path, 'Shader_Library.blend')
-    BML_generate_script = join(library_path, 'remove_material_from_library.py')
+    BML_generate_script = join(library_path, 'remove_material_from_library.py')    
+                     
     thumbnail_folder = [f for f in listdir(join(library_path, 'Thumbnails')) if isfile(join(library_path, 'Thumbnails', f, material + ".jpeg"))] 
-        
+    
     BML_thumbnails_directory = join(library_path, 'Thumbnails', ''.join(thumbnail_folder))
     thumbnail_remove = join(BML_thumbnails_directory, material + '.jpeg')
     
     os.remove(thumbnail_remove)
+    
     sub = subprocess.Popen([bpy.app.binary_path, BML_shader_library, '-b', '--python', BML_generate_script, material])
     sub.wait()
 
