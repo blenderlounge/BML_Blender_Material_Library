@@ -38,7 +38,7 @@ def import_materials_from_files(self, context):
     library_path = os.path.dirname(__file__)
 
     SECTION   = "Material" # on importe un materiau
-    mat_name = (bpy.data.window_managers["WinMan"].BML_previews.split("."))[0]
+    mat_name = bpy.data.window_managers["WinMan"].BML_previews.split(".jpeg")[0]
     obj_list = []
     obj_name = bpy.context.active_object.name
 
@@ -259,7 +259,7 @@ class InitImportIntoBML(bpy.types.Operator):
 
 def rename_mat_in_blm():
         
-    material = bpy.data.window_managers["WinMan"].BML_previews.split(".")[0]                   
+    material = bpy.data.window_managers["WinMan"].BML_previews.split(".jpeg")[0]                   
     library_path = os.path.dirname(os.path.abspath(__file__))
     wm = bpy.context.window_manager  
     BML_render_type = wm.preview_type 
