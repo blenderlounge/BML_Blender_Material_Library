@@ -17,7 +17,7 @@ def update_preview_type(self, context):
     register_BML_pcoll_preview()
 
 
-def get_enum_previews(self, context): # self et context demandés par l'API
+def get_enum_previews(self, context): # self et context demandï¿½s par l'API
     """ """
     return enum_previews_from_directory_items(context.window_manager.is_generating_preview)
 
@@ -31,7 +31,7 @@ def enum_previews_from_directory_items(is_generating_preview):
 
     wm = bpy.context.window_manager
     thumbnail_type = wm.preview_type
-        
+
     directory = join(os.path.dirname(__file__), "Thumbnails",thumbnail_type[1:])
 
     # Get the preview collection (defined in register func).
@@ -56,27 +56,27 @@ def enum_previews_from_directory_items(is_generating_preview):
             enum_items.append((name, name, name, thumb.icon_id, i)) # 3 bpy.utils.resource_path('USER') + "scripts/addons/material_lib
 
     pcoll.BML_previews = enum_items
-    
+
     # print('[BML] - Thumbnails list:', enum_items)
     print('[BML] - Thumbnails list:', [item[0] for item in enum_items], 'Length:', len(enum_items))
     pcoll.BML_previews_dir = directory
-    
-    
+
+
 def register_BML_pcoll_preview():
     wm = bpy.context.window_manager
 
     global BML_preview_collections
     for pcoll in BML_preview_collections.values():
         bpy.utils.previews.remove(pcoll)
-        
+
     WindowManager.BML_previews = EnumProperty(
             items=get_enum_previews,
             update=import_materials_from_BML)
-    
+
     pcoll = bpy.utils.previews.new() # pcoll pour preview collection
     pcoll.BML_previews_dir = ""
     pcoll.BML_previews = ()
-    
+
     BML_preview_collections = {}
     BML_preview_collections["main"] = pcoll
 

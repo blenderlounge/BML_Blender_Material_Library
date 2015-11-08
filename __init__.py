@@ -24,21 +24,21 @@ bl_info = {
     "name": "Blender Material Library (BML)",
     "description": "Create your own material library, with thumbnail preview and a simple import",
     "author": "Lapineige, Pitiwazou, Pistiwique, Matpi",
-    "version": (0, 2, 0),
+    "version": (0, 3, 0),
     "blender": (2, 75, 0),
     "location": "3D View / Material Properties",
     "warning": "This addon is still in development - quite stable, but keep a copy of your materials",
     "wiki_url": "",
     "category": "Material" }
 
-    
-    
-import bpy 
+
+
+import bpy
 from bpy.types import AddonPreferences
-from bpy.props import StringProperty, BoolProperty   
+from bpy.props import StringProperty, BoolProperty
 from . ui import *
-from . preview_utils import (register_BML_pcoll_preview, 
-                             unregister_BML_pcoll_preview, 
+from . preview_utils import (register_BML_pcoll_preview,
+                             unregister_BML_pcoll_preview,
                              update_preview_type)
 
 
@@ -48,7 +48,7 @@ def update_VIEW3D_PT_view_3d_bml(self, context):
         bpy.utils.unregister_class(VIEW3D_PT_view_3d_bml)
     except:
         pass
-    
+
     if context.user_preferences.addons[__name__].preferences.ui_panel:
         bpy.utils.register_class(VIEW3D_PT_view_3d_bml)
 
@@ -57,19 +57,19 @@ def update_VIEW3D_PT_tools_bml(self, context):
         bpy.utils.unregister_class(VIEW3D_PT_tools_bml)
     except:
         pass
-    
+
     if context.user_preferences.addons[__name__].preferences.tools_panel:
         VIEW3D_PT_tools_bml.bl_category = context.user_preferences.addons[__name__].preferences.tools_category
         bpy.utils.register_class(VIEW3D_PT_tools_bml)
-        
+
 def update_VIEW3D_HT_header_bml_preview(self, context):
     try:
-        bpy.types.VIEW3D_HT_header.remove(VIEW3D_HT_header_bml_preview) 
+        bpy.types.VIEW3D_HT_header.remove(VIEW3D_HT_header_bml_preview)
     except:
         pass
-    
+
     if context.user_preferences.addons[__name__].preferences.header_view3d:
-        bpy.types.VIEW3D_HT_header.append(VIEW3D_HT_header_bml_preview) 
+        bpy.types.VIEW3D_HT_header.append(VIEW3D_HT_header_bml_preview)
 
 
 #----NODE_EDITOR----#
@@ -78,42 +78,42 @@ def update_NODE_PT_tools_bml(self, context):
         bpy.utils.unregister_class(NODE_PT_tools_bml)
     except:
         pass
-    
+
     if context.user_preferences.addons[__name__].preferences.ne_tools_panel:
         NODE_PT_tools_bml.bl_category = context.user_preferences.addons[__name__].preferences.ne_tools_category
         bpy.utils.register_class(NODE_PT_tools_bml)
-        
+
 def update_NODE_PT_ui_bml(self, context):
     try:
         bpy.utils.unregister_class(NODE_PT_ui_bml)
     except:
         pass
-    
+
     if context.user_preferences.addons[__name__].preferences.ne_ui_panel:
-        bpy.utils.register_class(NODE_PT_ui_bml) 
+        bpy.utils.register_class(NODE_PT_ui_bml)
 
 def update_NODE_HT_header_bml_preview(self, context):
     try:
-        bpy.types.NODE_HT_header.remove(NODE_HT_header_bml_preview) 
+        bpy.types.NODE_HT_header.remove(NODE_HT_header_bml_preview)
     except:
         pass
-    
+
     if context.user_preferences.addons[__name__].preferences.header_node_editor:
-        bpy.types.NODE_HT_header.append(NODE_HT_header_bml_preview)        
-                
-#----MATERIAL----#            
+        bpy.types.NODE_HT_header.append(NODE_HT_header_bml_preview)
+
+#----MATERIAL----#
 def update_Cycles_PT_bml_panel(self, context):
     try:
         bpy.utils.unregister_class(Cycles_PT_bml_panel)
     except:
         pass
-    
+
     # VIEW_3D
     if context.user_preferences.addons[__name__].preferences.material_panel:
-        bpy.utils.register_class(Cycles_PT_bml_panel)        
-        
-        
-     
+        bpy.utils.register_class(Cycles_PT_bml_panel)
+
+
+
 class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
     bl_idname = __name__
 
@@ -136,7 +136,7 @@ class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
             default=True,
             update=update_VIEW3D_HT_header_bml_preview
             )
-    
+
     #NodeEditor
     ne_ui_panel = BoolProperty(
             default=True,
@@ -156,21 +156,21 @@ class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
             default=True,
             update=update_NODE_HT_header_bml_preview
             )
-    
+
     #Material Panel
     material_panel = BoolProperty(
             default=True,
             update=update_Cycles_PT_bml_panel
             )
-    
-    
+
+
     enable_tab_info = BoolProperty(default=False)
     enable_tab_options = BoolProperty(default=False)
     enable_tab_urls = BoolProperty(default=False)
-    
+
     def draw(self, context):
         layout = self.layout
-        layout.prop(self, "enable_tab_info", text="Info", icon="QUESTION")  
+        layout.prop(self, "enable_tab_info", text="Info", icon="QUESTION")
         if self.enable_tab_info:
             row = layout.row()
             layout.label(text="Blender Shader Library is a simple and powerfull library for Blender")
@@ -180,8 +180,8 @@ class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
             layout.separator()
             layout.label(text="This Addon is still in development and will have more options in the near future")
             layout.label(text="Have fun and don't hesitate to tell us what do you think avout the addon on the blenderlounge forum")
-            
-        layout.prop(self, "enable_tab_options", text="Options", icon="SCRIPTWIN")  
+
+        layout.prop(self, "enable_tab_options", text="Options", icon="SCRIPTWIN")
         if self.enable_tab_options:
             # VIEW_3D
             box = layout.box()
@@ -195,7 +195,7 @@ class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
             row.prop(self, "ui_panel", text="N Panel")
             row = box.row()
             row.prop(self, "header_view3d", text="Header 3DView")
-            
+
             # NODE_EDITOR
             box = layout.box()
             row = box.row()
@@ -208,29 +208,29 @@ class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
             row.prop(self, "ne_ui_panel", text="N Panel")
             row = box.row()
             row.prop(self, "header_node_editor", text="Header Node Editor")
-            
+
             # MATERIAL
             box = layout.box()
             row = box.row()
             row.label(text="Material Panel :", icon='MATERIAL')
             row = box.row()
             row.prop(self, "material_panel", text="Material Panel")
-            
-            
-        layout.prop(self, "enable_tab_urls", text="URL's", icon="URL") 
+
+
+        layout.prop(self, "enable_tab_urls", text="URL's", icon="URL")
         if self.enable_tab_urls:
-            row = layout.row()    
+            row = layout.row()
             row.operator("wm.url_open", text="Pistiwique").url = "https://github.com/pistiwique"
             row.operator("wm.url_open", text="Pitiwazou").url = "http://www.pitiwazou.com/"
             row.operator("wm.url_open", text="Lapineige").url = "http://le-terrier-de-lapineige.over-blog.com/"
             row.operator("wm.url_open", text="BlenderLounge").url = "http://blenderlounge.fr/"
-            
-            
+
+
 # register
-################################## 
-    
+##################################
+
 def register():
-    bpy.utils.register_module(__name__) 
+    bpy.utils.register_module(__name__)
     register_BML_pcoll_preview()
     update_VIEW3D_PT_view_3d_bml(None, bpy.context)
     update_VIEW3D_PT_tools_bml(None, bpy.context)
@@ -239,9 +239,9 @@ def register():
     update_Cycles_PT_bml_panel(None, bpy.context)
     update_NODE_PT_ui_bml(None, bpy.context)
     update_NODE_HT_header_bml_preview(None, bpy.context)
-        
+
     bpy.types.WindowManager.is_generating_preview = bpy.props.BoolProperty(default=False)
-    
+
     bpy.types.WindowManager.preview_type = bpy.props.EnumProperty(
             items=(('_Sphere', "Sphere", ''),
                    ('_Cloth', "Cloth", ''),
@@ -250,19 +250,19 @@ def register():
                    default='_Sphere',
                    name='',
                    update=update_preview_type)
-                   
+
     bpy.types.WindowManager.replace_rename = bpy.props.EnumProperty(
             items=(('replace', "Replace in BML", "Replace the material in BLM by the current material"),
                    ('rename', "Rename before adding", "Change the material's name to add in BLM")),
                    default='rename',
-                   name="")                   
-    
+                   name="")
+
     bpy.types.WindowManager.new_name = bpy.props.StringProperty(
             default="",
             name="")
-            
+
 def unregister():
     unregister_BML_pcoll_preview()
-    bpy.types.VIEW3D_HT_header.remove(VIEW3D_HT_header_bml_preview)  
-    bpy.types.VIEW3D_HT_header.remove(NODE_HT_header_bml_preview)   
-    bpy.utils.unregister_module(__name__)   
+    bpy.types.VIEW3D_HT_header.remove(VIEW3D_HT_header_bml_preview)
+    bpy.types.VIEW3D_HT_header.remove(NODE_HT_header_bml_preview)
+    bpy.utils.unregister_module(__name__)

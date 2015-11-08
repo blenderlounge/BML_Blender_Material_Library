@@ -5,8 +5,8 @@ from os.path import join
 
 if __name__ == '__main__':
     blendfile = sys.argv[5] # recupere le chemin du fichier ou se trouve le materiau
-    material = sys.argv[6] # recupere le nom du materiau                  
-        
+    material = sys.argv[6] # recupere le nom du materiau
+
 
     with bpy.data.libraries.load(blendfile) as (data_from, data_to):
         if data_from.materials:
