@@ -5,7 +5,7 @@ import bmesh
 import os
 import subprocess
 from os import listdir
-from os.path import isfile, join
+from os.path import isdir, isfile, join
 from bpy.types import Operator
 
         #########################
@@ -251,29 +251,39 @@ class RemoveMaterialFromBML(Operator):
         bpy.ops.material.update_thumbnails()
         self.report({'INFO'}, 'Thumbnails updated. Removed: 1') # nombre à changer en cas de nettoyage multiple
 
+    def draw(self, context):
+        wm = context.window_manager        
+        layout = self.layout
+        material = bpy.data.window_managers["WinMan"].BML_previews.split(".jpeg")[0]
+        
+        col = layout.column()
+        col.label("Remove " + '" ' + material + ' "', icon='ERROR')
+        col.label("     It will not longer exist in BML")
+        
+    def invoke(self, context, event):
+        dpi_value = bpy.context.user_preferences.system.dpi
+        return context.window_manager.invoke_props_dialog(self, width=dpi_value*3, height=100) 
+
         return{"FINISHED"}
 
 def remove_material_from_library():
     wm = bpy.context.window_manager
-
-    if wm.preview_type == '_Sphere':
-        thumbnail_type = "Sphere"
-    elif wm.preview_type == '_Cloth':
-        thumbnail_type= "Cloth"
-    elif wm.preview_type == '_Softbox':
-        thumbnail_type= "Softbox"
-    elif wm.preview_type == '_Hair':
-        thumbnail_type= "Hair"
+    thumbnail_type = wm.preview_type
 
     library_path = os.path.dirname(os.path.abspath(__file__))
-    material = bpy.context.object.active_material.name
+    material = bpy.data.window_managers["WinMan"].BML_previews.split(".jpeg")[0]
     
     BML_shader_library = join(library_path, 'Shader_Library.blend')
-    BML_generate_script = join(library_path, 'remove_material_from_library.py')
-    BML_thumbnails_directory = join(library_path, 'Thumbnails', thumbnail_type)
-    thumbnail_remove = join(BML_thumbnails_directory, material + ".jpeg")
-
+    BML_generate_script = join(library_path, 'remove_material_from_library.py')    
+                     
+    thumbnail_folder = [f for f in listdir(join(library_path, 'Thumbnails')) if isfile(join(library_path, 'Thumbnails', f, material + ".jpeg"))] 
+    
+    BML_thumbnails_directory = join(library_path, 'Thumbnails', ''.join(thumbnail_folder))
+    thumbnail_remove = join(BML_thumbnails_directory, material + '.jpeg')
+    
+    os.remove(thumbnail_remove)
+    
     sub = subprocess.Popen([bpy.app.binary_path, BML_shader_library, '-b', '--python', BML_generate_script, material])
     sub.wait()
 
-    os.remove(thumbnail_remove)
+    
