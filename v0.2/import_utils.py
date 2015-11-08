@@ -250,6 +250,7 @@ class RemoveMaterialFromBML(Operator):
         
         bpy.ops.material.update_thumbnails()
         self.report({'INFO'}, 'Thumbnails updated. Removed: 1') # nombre à changer en cas de nettoyage multiple
+        return{"FINISHED"}
 
     def draw(self, context):
         wm = context.window_manager        
@@ -264,7 +265,6 @@ class RemoveMaterialFromBML(Operator):
         dpi_value = bpy.context.user_preferences.system.dpi
         return context.window_manager.invoke_props_dialog(self, width=dpi_value*3, height=100) 
 
-        return{"FINISHED"}
 
 def remove_material_from_library():
     wm = bpy.context.window_manager
