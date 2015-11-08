@@ -34,7 +34,7 @@ def apply_material(mat_name, assign_mat): # Called in the import_materials_from_
 def import_materials_from_BML(self, context):
     library_path = os.path.dirname(__file__)
     SECTION   = "Material" # on importe un materiau
-    mat_name = (bpy.data.window_managers["WinMan"].BML_previews.split("."))[0] # Get the name of material from the preview but without the extention file
+    mat_name = bpy.data.window_managers["WinMan"].BML_previews.split(".jpeg")[0] # Get the name of material from the preview but without the extention file
     obj_name = bpy.context.active_object.name
     assign_mat = False
     
