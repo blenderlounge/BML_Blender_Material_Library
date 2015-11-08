@@ -24,7 +24,7 @@ bl_info = {
     "name": "Blender Material Library (BML)",
     "description": "Create your own material library, with thumbnail preview and a simple import",
     "author": "Lapineige, Pitiwazou, Pistiwique, Matpi",
-    "version": (0, 2, 0),
+    "version": (0, 2, 1),
     "blender": (2, 75, 0),
     "location": "3D View / Material Properties",
     "warning": "This addon is still in development - quite stable, but keep a copy of your materials",
