@@ -6,11 +6,11 @@ import os
 from os.path import join
 
 if __name__ == '__main__':
-    material = sys.argv[5] # r�cup�re le nom du mat�riau
-    thumbnails_directory = sys.argv[6] # r�cup�re le dossier de stockage des miniatures
+    material = sys.argv[5] # récupére le nom du matériau
+    thumbnails_directory = sys.argv[6] # récupére le dossier de stockage des miniatures
     render_type = sys.argv[7]
 
-    if not material in [line.body for line in bpy.data.texts["BML_material_list"].lines]: #### Peut �tre mieux de rajouter une option lors de l'import, plus pratique ensutie avec les tags, plus s�r
+    if not material in [line.body for line in bpy.data.texts["BML_material_list"].lines]: #### Peut être mieux de rajouter une option lors de l'import, plus pratique ensutie avec les tags, plus sùr
         bpy.data.texts["BML_material_list"].lines[-1].body = material + ';' + render_type[1:] + '\n'
 
     if render_type == '_Sphere':
@@ -52,13 +52,13 @@ if __name__ == '__main__':
     for item in bpy.context.object.data.body:
         bpy.ops.font.delete()
 
-    # insert le nom du mat�riau de l'objet � rendre
+    # insert le nom du matériau de l'objet à rendre
     bpy.ops.font.text_insert(text=material)
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
     bpy.ops.object.select_all(action='DESELECT')
-    # Selection de l'objet � rendre
+    # Selection de l'objet à rendre
     bpy.data.objects[render_type].select = True
     # passage de _render_Model en objet actif
     bpy.context.scene.objects.active = bpy.data.objects[render_type]

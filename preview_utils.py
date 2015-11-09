@@ -17,7 +17,7 @@ def update_preview_type(self, context):
     register_BML_pcoll_preview()
 
 
-def get_enum_previews(self, context): # self et context demand�s par l'API
+def get_enum_previews(self, context): # self et context demandés par l'API
     """ """
     return enum_previews_from_directory_items(context.window_manager.is_generating_preview)
 

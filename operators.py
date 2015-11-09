@@ -25,13 +25,13 @@ class AddInBMLcontainer(Operator):
     def modal(self, context, event):
 
         if self.is_thumbnails_updated(): # on attends un changement dans le dossier des miniatures
-            self.report({'INFO'}, "Thumbnails render done - Updating preview...") # Pas visible normalement, car update tr�s rapide
+            self.report({'INFO'}, "Thumbnails render done - Updating preview...") # Pas visible normalement, car update très rapide
 
-            bpy.ops.material.update_thumbnails()
+            bpy.ops.material.update_thumbnails('INVOKE_DEFAULT')
 
             self.report(
                 {'INFO'}, "Thumbnails updated. Created: {0} - Orphaned: {1}".format(
-                len(self.thumbs_list) - len(self.thumbnails_directory_list), # attention plus valable en cas de suppression ant�rieure au calcul
+                len(self.thumbs_list) - len(self.thumbnails_directory_list), # attention plus valable en cas de suppression antèrieure au calcul
                 'TODO')
                        )
 
@@ -43,9 +43,9 @@ class AddInBMLcontainer(Operator):
 
     def invoke(self, context, event):
 
-        # g�n�ration de la liste des miniatures depuis tout les dossiers Thumbnails
+        # génération de la liste des miniatures depuis tout les dossiers Thumbnails
         list_files = os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Cloth')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Softbox')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Sphere')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Hair'))
-        self.thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')] # il faut la r�initialiser � chaque lancement, en cas de mofication # filtrage idem pr�c�dent
+        self.thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')] # il faut la réinitialiser à chaque lancement, en cas de mofication # filtrage idem précédent
 
 
         #print('LIST:', self.thumbnails_directory_list, 'Length:', len(thumbnails_directory_list))
@@ -55,7 +55,7 @@ class AddInBMLcontainer(Operator):
             return {'FINISHED'}
 
         self.report({'INFO'}, "Thumbnails Rendering started...")
-        add_in_bml() # execut� la premi�re fois uniquement
+        add_in_bml() # executé la première fois uniquement
 
         context.window_manager.modal_handler_add(self)
 
@@ -124,13 +124,13 @@ class ChangeNameInBLM(Operator):
     def modal(self, context, event):
 
         if self.is_thumbnails_updated(): # on attends un changement dans le dossier des miniatures
-            self.report({'INFO'}, 'Thumbnails render done - Updating preview...') # Pas visible normalement, car update tr�s rapide
+            self.report({'INFO'}, 'Thumbnails render done - Updating preview...') # Pas visible normalement, car update très rapide
 
-            bpy.ops.material.update_thumbnails()
+            bpy.ops.material.update_thumbnails('INVOKE_DEFAULT')
 
             self.report(
                 {'INFO'}, 'Thumbnails updated. Created: {0} - Orphaned: {1}'.format(
-                len(self.thumbs_list) - len(self.thumbnails_directory_list), # attention plus valable en cas de suppression ant�rieure au calcul
+                len(self.thumbs_list) - len(self.thumbnails_directory_list), # attention plus valable en cas de suppression antèrieure au calcul
                 'TODO')
             )
 
@@ -142,15 +142,15 @@ class ChangeNameInBLM(Operator):
 
     def invoke(self, context, event):
 
-        # g�n�ration de la liste des miniatures
+        # génération de la liste des miniatures
         list_files = os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Cloth')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Softbox')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Sphere')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Hair'))
-        self.thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')] # il faut la r�initialiser � chaque lancement, en cas de mofication # filtrage idem pr�c�dent
+        self.thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')] # il faut la réinitialiser à chaque lancement, en cas de mofication # filtrage idem précédent
 
 
         #print('LIST:', self.thumbnails_directory_list, 'Length:', len(thumbnails_directory_list))
 
         self.report({'INFO'}, 'Thumbnails Rendering started...')
-        rename_mat_in_blm() # execut� la premi�re fois uniquement
+        rename_mat_in_blm() # executé la première fois uniquement
 
         context.window_manager.modal_handler_add(self)
 
@@ -168,7 +168,7 @@ class UpdateThumbnails(Operator):
         return 'generate_thumbs_placeholder.txt' not in self.thumbs_dir_list
 
     def modal(self, context, event):
-        ##### AFFICHER REPORT avec g�n�ration thumbnails - 2 propri�t�s pour �a
+        ##### AFFICHER REPORT avec génération thumbnails - 2 propriétés pour ça
 
         if self.is_thumbnails_updated(): # on attends un changement dans le dossier des miniatures
             register_BML_pcoll_preview()
@@ -185,9 +185,9 @@ class UpdateThumbnails(Operator):
         update_script = join(library_path, 'update_thumbnails.py')
 
         sub = subprocess.Popen([bpy.app.binary_path, BML_shader_library, '-b', '--python', update_script])
-        #### Attention, un seul changement et �a coupe... v�rifier r�ponse du process
+        #### Attention, un seul changement et ça coupe... vérifier réponse du process
 
-        with open(join(os.path.dirname(os.path.abspath(__file__)),'Thumbnails', 'generate_thumbs_placeholder.txt'), 'w'): # fichier existant pendant tout la sauvegarde, on d�tectera sa suppression
+        with open(join(os.path.dirname(os.path.abspath(__file__)),'Thumbnails', 'generate_thumbs_placeholder.txt'), 'w'): # fichier existant pendant tout la sauvegarde, on détectera sa suppression
             pass
 
         self.report({'INFO'}, "Thumbnails Rendering started...")
@@ -244,8 +244,8 @@ class RemoveMaterialFromBML(Operator):
         sub = subprocess.Popen([bpy.app.binary_path, BML_shader_library, '-b', '--python', BML_generate_script, material])
         sub.wait()
 
-        bpy.ops.material.update_thumbnails()
-        self.report({'INFO'}, "Thumbnails updated. Removed: 1") # nombre � changer en cas de nettoyage multiple
+        bpy.ops.material.update_thumbnails('INVOKE_DEFAULT')
+        self.report({'INFO'}, "Thumbnails updated. Removed: 1") # nombre à changer en cas de nettoyage multiple
 
         return {'FINISHED'}
 

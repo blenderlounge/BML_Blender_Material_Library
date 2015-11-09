@@ -57,7 +57,7 @@ def import_materials_from_BML(self, context):
 
         else:
             blendfile_1 = join(library_path,'Shader_Library.blend')
-            source_files = [blendfile_1] # liste des fichiers ou tu va chercher les materiaux
+            source_files = [blendfile_1] # liste des fichiers ou tu vas chercher les materiaux
 
             with bpy.data.libraries.load(blendfile_1) as (data_from, data_to):
                 if data_from.materials:
@@ -88,7 +88,7 @@ def import_materials_from_BML(self, context):
                 bpy.data.objects[obj].select = True
             else:
                 blendfile_1 = join(library_path,'Shader_Library.blend')
-                source_files = [blendfile_1] # liste des fichiers ou tu va chercher les materiaux
+                source_files = [blendfile_1] # liste des fichiers ou tu vas chercher les materiaux
 
                 with bpy.data.libraries.load(blendfile_1) as (data_from, data_to):
                     if data_from.materials:
