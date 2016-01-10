@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 '''
-Copyright (C) 2015 YOUR NAME
-YOUR@MAIL.com
-
-Created by Lapineige, Pitiwazou, Pistiwique, Matpi
+Copyright (C) 2015-2016 Lapineige, Pitiwazou, Pistiwique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,24 +19,31 @@ Created by Lapineige, Pitiwazou, Pistiwique, Matpi
 
 bl_info = {
     "name": "Blender Material Library (BML)",
-    "description": "Create your own material library, with thumbnail preview and a simple import",
-    "author": "Lapineige, Pitiwazou, Pistiwique, Matpi",
-    "version": (0, 3, 0),
+    "description": "Create your own material library, with thumbnail-based import",
+    "author": "Lapineige, Pitiwazou, Pistiwique",
+    "version": (0, 3, 1),
     "blender": (2, 75, 0),
     "location": "3D View / Material Properties",
-    "warning": "This addon is still in development - quite stable, but keep a copy of your materials",
+    "warning": "Deleting BML or your preferences will destroy the library - Try to always keep an external copy of your materials",
     "wiki_url": "",
     "category": "Material" }
 
-
-
 import bpy
-from bpy.types import AddonPreferences
-from bpy.props import StringProperty, BoolProperty
+from bpy.types import AddonPreferences, PropertyGroup
+from bpy.props import StringProperty, BoolProperty, IntProperty, EnumProperty, PointerProperty
 from . ui import *
 from . preview_utils import (register_BML_pcoll_preview,
                              unregister_BML_pcoll_preview,
                              update_preview_type)
+from os.path import join, isfile
+from os import remove
+from shutil import copy2
+
+BLEND_FILE_NAME = 'Shader_Library.blend'
+
+#----DEBUG----#
+DEBUG = False
+DEBUG_UI = False
 
 
 #----VIEW_3D----#
@@ -113,11 +117,42 @@ def update_Cycles_PT_bml_panel(self, context):
         bpy.utils.register_class(Cycles_PT_bml_panel)
 
 
+# Update library blend file's path
+def library_blend_path_get(self): # value sert de nouveau chemin
+    return bpy.context.window_manager.BML.library_blend_path
 
-class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
+def library_blend_path_set(self, value): # value sert de nouveau chemin
+    value = os.path.realpath(bpy.path.abspath(value)) # bpy.path.abspath car os n'interpètre pas les remontés de dossier de Blender (/../) # realpath pour corriger la remontée depuis dossier courtant de bpy.path.abspath
+    previous = bpy.context.window_manager.BML.library_blend_path
+
+    if previous == value:
+        return
+
+    print() # aère la console
+
+    if not BLEND_FILE_NAME in value: # si un simple dossier est donné
+        value = join(value, BLEND_FILE_NAME) # on ajoute le lien vers le fichier
+    elif isfile(value): # si le fichier existe (récupération), on ne fait pas de copie
+        print('[BML] Removing old library file....')
+        remove(previous)
+        print('[BML] Removed old library at: ' + previous)
+        print("[BML] Using '%s' as the library file" % (value))
+        bpy.context.window_manager.BML.library_blend_path = value
+        return
+
+    if not isfile(value):
+        print('[BML] Copying library to new location: ' + value)
+        copy2(previous, value.split(BLEND_FILE_NAME)[0]) # on copie un fichier dans un dossier.
+        print('[BML] Removing old library file...')
+        remove(previous)
+        print('[BML] Removed old library at: ' + previous)
+        bpy.context.window_manager.BML.library_blend_path = value
+        return
+
+class BlenderMaterialLibraryAddonPreferences(AddonPreferences): #### ATTENTION Si appel aux prefs, garder nom dossier (et donc archive) à BML ATTENTION ###
     bl_idname = __name__
 
-    #3DVIEW
+    ### 3DVIEW
     ui_panel = BoolProperty(
             default=True,
             update=update_VIEW3D_PT_view_3d_bml
@@ -137,7 +172,7 @@ class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
             update=update_VIEW3D_HT_header_bml_preview
             )
 
-    #NodeEditor
+    ### NodeEditor
     ne_ui_panel = BoolProperty(
             default=True,
             update=update_NODE_PT_ui_bml
@@ -157,19 +192,38 @@ class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
             update=update_NODE_HT_header_bml_preview
             )
 
-    #Material Panel
+    ### Material Panel
     material_panel = BoolProperty(
             default=True,
             update=update_Cycles_PT_bml_panel
             )
 
-
     enable_tab_info = BoolProperty(default=False)
     enable_tab_options = BoolProperty(default=False)
     enable_tab_urls = BoolProperty(default=False)
 
+    ### User Preferences
+    # Library location and auto-saving
+    library_blend_path_ui = StringProperty(
+        name = "Path to library blend file",
+        description = "Path to the BML blend file. To reset to default, leave empty.",
+        default = join(os.path.dirname(bpy.path.abspath(__file__)), 'Shader_Library.blend'),
+        subtype = 'FILE_PATH',
+        set = library_blend_path_set,
+        get = library_blend_path_get
+        )
+    #
+    alphabetical_sort = BoolProperty(default=True) #### TODO A convertir en enum property > choix ordre d'ajout
+    auto_remove_orphaned = BoolProperty(default=True)
+
     def draw(self, context):
         layout = self.layout
+
+        prefs = context.user_preferences.addons[__name__].preferences
+        layout.prop(prefs, 'library_blend_path_ui')
+        if context.window_manager.BML.debug_ui:
+            layout.prop(context.window_manager.BML, 'library_blend_path')# ATTENTION
+
         layout.prop(self, "enable_tab_info", text="Info", icon="QUESTION")
         if self.enable_tab_info:
             row = layout.row()
@@ -225,12 +279,49 @@ class BlenderMaterialLibraryAddonPreferences(AddonPreferences):
             row.operator("wm.url_open", text="Lapineige").url = "http://le-terrier-de-lapineige.over-blog.com/"
             row.operator("wm.url_open", text="BlenderLounge").url = "http://blenderlounge.fr/"
 
+#### Groupe de propriétés
+class BML_Group(PropertyGroup):
+    is_generating_preview = BoolProperty(default=False)
+    preview_block_update = BoolProperty(default=False, description="Block the preview effects - no material import")
+
+    rename_material = bpy.props.BoolProperty(
+        default=False,
+        description = "Rename current material"
+        )
+
+    # Handler
+    handler_active = BoolProperty(default=False)
+    render_progression = IntProperty(default=0, min=0, max=10)
+    render_nb = IntProperty(default=1, min=1)
+    max_render_nb = IntProperty(default=1, min=1)
+    render_status = StringProperty(default='')
+
+    # library saving
+    library_blend_path = StringProperty(
+        name = "Path to library blend file (Internal)",
+        description = "Path to the BML blend file. To reset to default, leave empty. (Internal)",
+        default = join(os.path.dirname(bpy.path.abspath(__file__)), 'Shader_Library.blend'),
+        subtype = 'FILE_PATH'
+        )
+
+    # DEBUG
+    debug = BoolProperty(default=False)
+    debug_ui = BoolProperty(default=False) # affiche de nouveaux boutons + propriétés (ex: handler)
 
 # register
 ##################################
 
 def register():
     bpy.utils.register_module(__name__)
+
+    bpy.types.WindowManager.BML = PointerProperty(type=BML_Group)
+
+    global DEBUG, DEBUG_UI
+    if DEBUG:
+        bpy.context.window_manager.BML.debug = True
+    if DEBUG_UI:
+        bpy.context.window_manager.BML.debug_ui = True
+
     register_BML_pcoll_preview()
     update_VIEW3D_PT_view_3d_bml(None, bpy.context)
     update_VIEW3D_PT_tools_bml(None, bpy.context)
@@ -240,9 +331,8 @@ def register():
     update_NODE_PT_ui_bml(None, bpy.context)
     update_NODE_HT_header_bml_preview(None, bpy.context)
 
-    bpy.types.WindowManager.is_generating_preview = bpy.props.BoolProperty(default=False)
 
-    bpy.types.WindowManager.preview_type = bpy.props.EnumProperty(
+    bpy.types.WindowManager.preview_type = EnumProperty(
             items=(('_Sphere', "Sphere", ''),
                    ('_Cloth', "Cloth", ''),
                    ('_Softbox', "Softbox", ''),
@@ -251,18 +341,19 @@ def register():
                    name='',
                    update=update_preview_type)
 
-    bpy.types.WindowManager.replace_rename = bpy.props.EnumProperty(
+    bpy.types.WindowManager.BML_replace_rename = EnumProperty(
             items=(('replace', "Replace in BML", "Replace the material in BLM by the current material"),
                    ('rename', "Rename before adding", "Change the material's name to add in BLM")),
                    default='rename',
                    name="")
 
-    bpy.types.WindowManager.new_name = bpy.props.StringProperty(
+    bpy.types.WindowManager.new_name = StringProperty(
             default="",
             name="")
 
 def unregister():
-    unregister_BML_pcoll_preview()
     bpy.types.VIEW3D_HT_header.remove(VIEW3D_HT_header_bml_preview)
     bpy.types.VIEW3D_HT_header.remove(NODE_HT_header_bml_preview)
+    # TODO supprimer handler
     bpy.utils.unregister_module(__name__)
+    unregister_BML_pcoll_preview()

@@ -1,17 +1,38 @@
 # -*- coding: utf-8 -*-
 
+'''
+Copyright (C) 2015-2016 Lapineige, Pitiwazou, Pistiwique
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+'''
 import bpy
 import sys
-import os
-from os.path import join
+from os.path import join, dirname
 
-if __name__ == '__main__':
-    material = sys.argv[5] # récupére le nom du matériau
-    thumbnails_directory = sys.argv[6] # récupére le dossier de stockage des miniatures
-    render_type = sys.argv[7]
+library_path = dirname(__file__)
 
-    if not material in [line.body for line in bpy.data.texts["BML_material_list"].lines]: #### Peut être mieux de rajouter une option lors de l'import, plus pratique ensutie avec les tags, plus sùr
-        bpy.data.texts["BML_material_list"].lines[-1].body = material + ';' + render_type[1:] + '\n'
+mat_list = sys.argv[5].split(';') #### ATTENTION doit être une liste
+rdr_type_list = sys.argv[6].split(';')
+#print(mat_list)
+#print(rdr_type_list)
+
+for idx , material in enumerate(mat_list):
+    with open( join(library_path,'Render_count.txt') , 'a') as render_count: # append pour ne pas détruire l'historique
+        render_count.write('\nRender Number: %d - Material: %s' % (idx+1,material)) # idx commence à 0 > idx+1
+
+    render_type = '_' + rdr_type_list[idx] # récupère le type de miniature
+    thumbnails_directory = join(library_path, 'Thumbnails', rdr_type_list[idx])
 
     if render_type == '_Sphere':
         bpy.context.scene.layers[0] = True
@@ -69,4 +90,4 @@ if __name__ == '__main__':
 
     print("[BML] - Preview Created:", join(thumbnails_directory, material + '.jpeg'))
 
-    bpy.ops.wm.quit_blender()
+bpy.ops.wm.quit_blender()
