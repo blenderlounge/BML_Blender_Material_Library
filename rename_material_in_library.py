@@ -23,8 +23,8 @@ import os
 from os.path import join
 
 if __name__ == '__main__':
-    material = sys.argv[5] # récupére le nom du matériau
-    thumbnails_directory = sys.argv[6] # récupére le dossier de stockage des miniatures
+    material = sys.argv[5] # recupere le nom du materiau
+    thumbnails_directory = sys.argv[6] # recupere le dossier de stockage des miniatures
     render_type = sys.argv[7]
     new_name = sys.argv[8]
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     bpy.data.objects[render_type].active_material = bpy.data.materials[material]
     # ### Renommage
-    # changement nom matériau
+    # changement nom materiau
     bpy.data.materials[material].name = new_name
     # changement du texte
     for line in bpy.data.texts['BML_material_list'].lines:
@@ -63,7 +63,7 @@ if __name__ == '__main__':
             line.body = new_name + ';' + render_type[1:]
 
     bpy.ops.object.select_all(action='DESELECT')
-    # Sélection du texte
+    # Selection du texte
     bpy.data.objects["Text"].select = True
     # Le mettre en Actif
     bpy.context.scene.objects.active = bpy.data.objects["Text"]
@@ -74,13 +74,13 @@ if __name__ == '__main__':
     for item in bpy.context.object.data.body:
         bpy.ops.font.delete()
 
-    # insert le nom du mat�riau de l'objet � rendre
+    # insert le nom du materiau de l'objet a rendre
     bpy.ops.font.text_insert(text=new_name)
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
     bpy.ops.object.select_all(action='DESELECT')
-    # Selection de l'objet � rendre
+    # Selection de l'objet a rendre
     bpy.data.objects[render_type].select = True
     # passage de _render_Model en objet actif
     bpy.context.scene.objects.active = bpy.data.objects[render_type]

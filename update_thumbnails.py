@@ -19,7 +19,7 @@ Copyright (C) 2015-2016 Lapineige, Pitiwazou, Pistiwique
 
 import bpy
 import os
-import sys.argv
+import sys
 from os.path import join
 import subprocess
 
@@ -28,7 +28,7 @@ BML_shader_library = sys.argv[1]
 BML_generate_script = join(library_path, 'generate_thumbnails.py')
 
 
-list_files = os.listdir(join(library_path, 'Thumbnails', 'Cloth')) + os.listdir(join(library_path, 'Thumbnails', 'Softbox')) + os.listdir(join(library_path, 'Thumbnails', 'Sphere')) + os.listdir(join(library_path, 'Thumbnails', 'Hair')) # à convertir par une liste des dossiers, puis liste matériaux > récursif
+list_files = os.listdir(join(library_path, 'Thumbnails', 'Cloth')) + os.listdir(join(library_path, 'Thumbnails', 'Softbox')) + os.listdir(join(library_path, 'Thumbnails', 'Sphere')) + os.listdir(join(library_path, 'Thumbnails', 'Hair')) # a convertir par une liste des dossiers, puis liste materiaux > recursif
 
 mat_list = []
 thumbs_dir_list = []
@@ -43,12 +43,12 @@ for ligne in bpy.data.texts["BML_material_list"].lines:
     mat_list.append(ligne.body.split(';')[0])
     thumbs_dir_list.append(ligne.body.split(';')[1])
 
-#### matériau et miniatures doivent être des str (subprocess n'accepte que ça). Ils seront redécoupés ensuite
-mat_list = ';'.join(mat_list) # 'matériau1;matériau2'...
+#### materiau et miniatures doivent etre des str (subprocess n'accepte que ça). Ils seront redecoupes ensuite
+mat_list = ';'.join(mat_list) # 'materiau1;materiau2'...
 thumbs_dir_list = ';'.join(thumbs_dir_list)
 
 with open( join(library_path,'Render_output.txt') , 'wb') as render_log:
     sub = subprocess.Popen([bpy.app.binary_path, BML_shader_library, '-b', '--python', BML_generate_script, mat_list, thumbs_dir_list], stdout=render_log, stderr=render_log)
-    sub.wait() # à désactiver (option ?) pour tout rendre en même temps
+    sub.wait() # a desactiver (option ?) pour tout rendre en meme temps
 
-os.remove( join(os.path.dirname(os.path.abspath(__file__)), 'Thumbnails', 'generate_thumbs_placeholder.txt') ) #### ATTENTION non présent ?
+os.remove( join(os.path.dirname(os.path.abspath(__file__)), 'Thumbnails', 'generate_thumbs_placeholder.txt') ) #### ATTENTION non present ?

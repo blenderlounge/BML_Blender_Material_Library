@@ -22,16 +22,16 @@ from os.path import join, dirname
 
 library_path = dirname(__file__)
 
-mat_list = sys.argv[5].split(';') #### ATTENTION doit être une liste
+mat_list = sys.argv[5].split(';') #### ATTENTION doit etre une liste
 rdr_type_list = sys.argv[6].split(';')
 #print(mat_list)
 #print(rdr_type_list)
 
 for idx , material in enumerate(mat_list):
-    with open( join(library_path,'Render_count.txt') , 'a') as render_count: # append pour ne pas détruire l'historique
-        render_count.write('\nRender Number: %d - Material: %s' % (idx+1,material)) # idx commence à 0 > idx+1
+    with open( join(library_path,'Render_count.txt') , 'a') as render_count: # append pour ne pas detruire l'historique
+        render_count.write('\nRender Number: %d - Material: %s' % (idx+1,material)) # idx commence a 0 > idx+1
 
-    render_type = '_' + rdr_type_list[idx] # récupère le type de miniature
+    render_type = '_' + rdr_type_list[idx] # recupere le type de miniature
     thumbnails_directory = join(library_path, 'Thumbnails', rdr_type_list[idx])
 
     if render_type == '_Sphere':
@@ -73,13 +73,13 @@ for idx , material in enumerate(mat_list):
     for item in bpy.context.object.data.body:
         bpy.ops.font.delete()
 
-    # insert le nom du matériau de l'objet à rendre
+    # insert le nom du materiau de l'objet a rendre
     bpy.ops.font.text_insert(text=material)
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
     bpy.ops.object.select_all(action='DESELECT')
-    # Selection de l'objet à rendre
+    # Selection de l'objet a rendre
     bpy.data.objects[render_type].select = True
     # passage de _render_Model en objet actif
     bpy.context.scene.objects.active = bpy.data.objects[render_type]

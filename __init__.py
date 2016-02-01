@@ -122,17 +122,17 @@ def library_blend_path_get(self): # value sert de nouveau chemin
     return bpy.context.window_manager.BML.library_blend_path
 
 def library_blend_path_set(self, value): # value sert de nouveau chemin
-    value = os.path.realpath(bpy.path.abspath(value)) # bpy.path.abspath car os n'interpètre pas les remontés de dossier de Blender (/../) # realpath pour corriger la remontée depuis dossier courtant de bpy.path.abspath
+    value = os.path.realpath(bpy.path.abspath(value)) # bpy.path.abspath car os n'interpetre pas les remontes de dossier de Blender (/../) # realpath pour corriger la remontee depuis dossier courant de bpy.path.abspath
     previous = bpy.context.window_manager.BML.library_blend_path
 
     if previous == value:
         return
 
-    print() # aère la console
+    print() # aere la console
 
-    if not BLEND_FILE_NAME in value: # si un simple dossier est donné
+    if not BLEND_FILE_NAME in value: # si un simple dossier est donne
         value = join(value, BLEND_FILE_NAME) # on ajoute le lien vers le fichier
-    elif isfile(value): # si le fichier existe (récupération), on ne fait pas de copie
+    elif isfile(value): # si le fichier existe (recuperation), on ne fait pas de copie
         print('[BML] Removing old library file....')
         remove(previous)
         print('[BML] Removed old library at: ' + previous)
@@ -149,7 +149,7 @@ def library_blend_path_set(self, value): # value sert de nouveau chemin
         bpy.context.window_manager.BML.library_blend_path = value
         return
 
-class BlenderMaterialLibraryAddonPreferences(AddonPreferences): #### ATTENTION Si appel aux prefs, garder nom dossier (et donc archive) à BML ATTENTION ###
+class BlenderMaterialLibraryAddonPreferences(AddonPreferences): #### ATTENTION Si appel aux prefs, garder nom dossier (et donc archive) a BML ATTENTION ###
     bl_idname = __name__
 
     ### 3DVIEW
@@ -279,7 +279,7 @@ class BlenderMaterialLibraryAddonPreferences(AddonPreferences): #### ATTENTION S
             row.operator("wm.url_open", text="Lapineige").url = "http://le-terrier-de-lapineige.over-blog.com/"
             row.operator("wm.url_open", text="BlenderLounge").url = "http://blenderlounge.fr/"
 
-#### Groupe de propriétés
+#### Groupe de proprietes
 class BML_Group(PropertyGroup):
     is_generating_preview = BoolProperty(default=False)
     preview_block_update = BoolProperty(default=False, description="Block the preview effects - no material import")
@@ -306,7 +306,7 @@ class BML_Group(PropertyGroup):
 
     # DEBUG
     debug = BoolProperty(default=False)
-    debug_ui = BoolProperty(default=False) # affiche de nouveaux boutons + propriétés (ex: handler)
+    debug_ui = BoolProperty(default=False) # affiche de nouveaux boutons + proprietes (ex: handler)
 
 # register
 ##################################

@@ -53,7 +53,7 @@ def apply_material(mat_name, assign_mat): # Called in the import_materials_from_
 #############################################
 
 def import_materials_from_BML(self, context):
-    # Bloque si appel depuis un script (réinitialisation,...)
+    # Bloque si appel depuis un script (r�initialisation,...)
     if context.window_manager.BML.preview_block_update:
         return
 
@@ -134,12 +134,13 @@ def import_materials_from_BML(self, context):
 def add_materials_to_library():
     wm = bpy.context.window_manager
     library_path = os.path.dirname(os.path.abspath(__file__))
+    addon_dir = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
     blendfile = join(library_path, 'BML_temp.blend')
     material = bpy.context.object.active_material.name
 
     bpy.ops.wm.save_as_mainfile(filepath = blendfile, copy = True)
 
-    BML_shader_library = bpy.context.user_preferences.addons['BML'].preferences.library_blend_path
+    BML_shader_library = bpy.context.user_preferences.addons[addon_dir].preferences.library_blend_path_ui
     BML_import_script = join(library_path, 'add_in_library_from_external_file.py')
 
     print("[BML] Import - ", "File:", blendfile, "Material:", material, "Library:", BML_shader_library, "Script:", BML_import_script)
@@ -155,17 +156,17 @@ def add_in_bml():
     wm = bpy.context.window_manager
 
     material = bpy.context.object.active_material.name
-
+    addon_dir = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
     library_path = os.path.dirname(os.path.abspath(__file__))
     BML_thumbnails_directory = join(library_path, 'Thumbnails', wm.preview_type[1:])
-    BML_shader_library = bpy.context.user_preferences.addons['BML'].preferences.library_blend_path
+    BML_shader_library = bpy.context.user_preferences.addons[addon_dir].preferences.library_blend_path_ui
     BML_generate_script = join(library_path, 'generate_thumbnails.py')
 
     print("[BML] Generate Thumbnails - ", "Directory:", BML_thumbnails_directory, "Material:", [material], "Library:", BML_shader_library, "Script:",BML_generate_script)
 
     bpy.ops.view3d.bml_render_progression_update('INVOKE_DEFAULT')
     with open( join(library_path,'Render_count.txt') , 'w') as render_count:
-        render_count.write('Render Total: %s' % (1)) # Ne marche pas sur même fichier que la sortie blender - pourquoi ?
+        render_count.write('Render Total: %s' % (1)) # Ne marche pas sur meme fichier que la sortie blender - pourquoi ?
     with open( join(library_path,'Render_output.txt') , 'wb') as render_log:
         sub = subprocess.Popen([bpy.app.binary_path, BML_shader_library, '-b', '--python', BML_generate_script, material, wm.preview_type[1:]], stdout=render_log, stderr=render_log)
 
@@ -182,7 +183,7 @@ def rename_mat_in_blm():
     thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')]
 
     BML_thumbnails_directory = join(library_path, 'Thumbnails', BML_render_type[1:])
-    BML_shader_library = bpy.context.user_preferences.addons['BML'].preferences.library_blend_path
+    BML_shader_library = bpy.context.user_preferences.addons['BML'].preferences.library_blend_path_ui
     BML_rename_script = join(library_path, 'rename_material_in_library.py')
 
     print('[BML] Renaming material: ', material, 'To: ', new_name, 'With script:', BML_rename_script)

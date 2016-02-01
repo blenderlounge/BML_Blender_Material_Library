@@ -34,13 +34,14 @@ def update_preview_type(self, context):
     register_BML_pcoll_preview()
 
 
-def get_enum_previews(self, context): # self et context demandés par l'API
+def get_enum_previews(self, context): # self et context demandes par l'API
     """ """
     return enum_previews_from_directory_items(context.window_manager.BML.is_generating_preview)
 
 
 def enum_previews_from_directory_items(is_generating_preview):
     """ N'utilise pas self et context, pour un appel externe au preset de Blender """
+
     enum_items = []
 
     if bpy.context is None:
@@ -71,8 +72,8 @@ def enum_previews_from_directory_items(is_generating_preview):
             filepath = os.path.join(directory, name)
             thumb = pcoll.load(filepath, filepath, 'IMAGE')
             enum_items.append((name, name, name, thumb.icon_id, i)) # 3 bpy.utils.resource_path('USER') + "scripts/addons/material_lib
-
-    if bpy.context.user_preferences.addons['BML'].preferences.alphabetical_sort: #### TODO convertir avec l'enum
+    addon_dir = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
+    if bpy.context.user_preferences.addons[addon_dir].preferences.alphabetical_sort: #### TODO convertir avec l'enum
         enum_items = sorted(enum_items)
     pcoll.BML_previews = enum_items
 

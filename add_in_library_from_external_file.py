@@ -23,9 +23,9 @@ from os import remove
 from os.path import join
 
 if __name__ == '__main__':
-    blendfile = sys.argv[5] # recupère le chemin du fichier où se trouve le matériau
-    material = sys.argv[6] # recupère le nom du matériau
-    render_type = sys.argv[7] # recupère le type de preview
+    blendfile = sys.argv[5] # recupere le chemin du fichier ou se trouve le materiau
+    material = sys.argv[6] # recupere le nom du materiau
+    render_type = sys.argv[7] # recupere le type de preview
 
     with bpy.data.libraries.load(blendfile) as (data_from, data_to):
         if data_from.materials:
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
             if not material in [line.body.split(';')[0] for line in bpy.data.texts['BML_material_list'].lines]:
 
-                BML_material_list = [ligne.body for ligne in bpy.data.texts['BML_material_list'].lines if ligne]                # stockage sous forme de liste + nettoyage automatique des lignes de fin vides
+                BML_material_list = [ligne.body for ligne in bpy.data.texts['BML_material_list'].lines if ligne]   # stockage sous forme de liste + nettoyage automatique des lignes de fin vides
 
                 if BML_material_list[-1] == '':
                     BML_material_list[-1]= material + ';' + render_type
@@ -51,5 +51,5 @@ if __name__ == '__main__':
                 bpy.data.texts['BML_material_list'].write(text)
 
     bpy.ops.wm.save_mainfile()
-    remove(blendfile) # détruit le fichier temporaire contenant le matériau
+    remove(blendfile) # detruit le fichier temporaire contenant le materiau
     bpy.ops.wm.quit_blender()

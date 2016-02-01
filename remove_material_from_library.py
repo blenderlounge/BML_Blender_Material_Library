@@ -24,8 +24,8 @@ from os.path import join
 from os import remove
 
 if __name__ == '__main__':
-    material = sys.argv[5] # recupère le nom du matériau ### TODO à convertir en liste
-    #thumbnails_directory = sys.argv[6] # recupère le dossier de stockage des miniatures
+    material = sys.argv[5] # recupere le nom du materiau ### TODO a convertir en liste
+    #thumbnails_directory = sys.argv[6] # recupere le dossier de stockage des miniatures
 
     bpy.data.objects["_Sphere"].active_material = bpy.data.materials[material]
 

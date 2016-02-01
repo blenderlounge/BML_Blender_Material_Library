@@ -29,11 +29,11 @@ from . import_utils import add_in_bml, rename_mat_in_blm
 from time import time
 
 #############################################
-##  Ajout de matériau dans la librairie   ###
+##  Ajout de materiau dans la librairie   ###
 #############################################
 
 class AddInBMLcontainer(Operator):
-    ''' Conteneur qui gère les ajouts de matériau, les conflits (renommage) '''
+    ''' Conteneur qui gere les ajouts de materiau, les conflits (renommage) '''
     bl_idname = "material.add_in_bml_container"
     bl_label = "Import active material into BML"
     bl_description = "Import active material into BML"
@@ -60,20 +60,20 @@ class AddInBMLcontainer(Operator):
             if wm.BML_replace_rename == 'replace':
                 bpy.ops.material.remove_material_from_bml()
             elif wm.BML_replace_rename == 'rename' and wm.BML_new_name:
-                context.object.active_material.name = wm.BML_new_name #### Pas top, il ne faudrait pas changer le nom du matériau courant > changement au niveau de la gestion du nom lors de l'ajout ? ### quoique c'est cohérent en cas d'ajout...
+                context.object.active_material.name = wm.BML_new_name #### Pas top, il ne faudrait pas changer le nom du materiau courant > changement au niveau de la gestion du nom lors de l'ajout ? ### quoique c'est coherent en cas d'ajout...
 
-            self.report({'INFO'}, "Thumbnails Rendering started...") # Non affiché dans l'UI
-            add_in_bml() # executé la première fois uniquement
+            self.report({'INFO'}, "Thumbnails Rendering started...") # Non affiche dans l'UI
+            add_in_bml() # execute la premiere fois uniquement
             return {'PASS_THROUGH'}
 
         #### Update
         if self.is_thumbnails_updated(): # on attends un changement dans le dossier des miniatures
-            self.report({'INFO'}, "Thumbnails render done - Updating preview...") # Pas visible normalement, car update très rapide
+            self.report({'INFO'}, "Thumbnails render done - Updating preview...") # Pas visible normalement, car update tres rapide
 
             bpy.ops.material.update_thumbnails('INVOKE_DEFAULT')
 
-            self.report( {'INFO'}, "Thumbnails updated. Created: %d" % (len(self.thumbs_list) - len(self.thumbnails_directory_list)) )# attention plus valable en cas de suppression antérieure au calcul
-            wm.BML_new_name = '' # remets le nom à '' pour éviter le changement dans l'UI
+            self.report( {'INFO'}, "Thumbnails updated. Created: %d" % (len(self.thumbs_list) - len(self.thumbnails_directory_list)) )# attention plus valable en cas de suppression anterieure au calcul
+            wm.BML_new_name = '' # remets le nom a '' pour eviter le changement dans l'UI
             wm.BML.is_generating_preview = False
             return {'FINISHED'}
         else:
@@ -83,15 +83,15 @@ class AddInBMLcontainer(Operator):
         wm = context.window_manager
         wm.BML.is_generating_preview = True
 
-        # génération de la liste des miniatures depuis tout les dossiers Thumbnails
-        # [join( join(os.path.dirname(__file__), 'Thumbnails') , path) for path in os.listdir(join(os.path.dirname(__file__), 'Thumbnails'))] # > liste des dossiers dans lequel fouiller # ! au .directory (évité en test startwith('.') et éventuel autres fichiers (icône en cas de manque, etc))
+        # generation de la liste des miniatures depuis tout les dossiers Thumbnails
+        # [join( join(os.path.dirname(__file__), 'Thumbnails') , path) for path in os.listdir(join(os.path.dirname(__file__), 'Thumbnails'))] # > liste des dossiers dans lequel fouiller # ! au .directory (evite en test startwith('.') et eventuel autres fichiers (icone en cas de manque, etc))
         list_files = os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Cloth')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Softbox')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Sphere')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Hair'))
-        self.thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg')] # il faut la réinitialiser à chaque lancement, en cas de mofication # filtrage idem précédent
+        self.thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg')] # il faut la reinitialiser a chaque lancement, en cas de mofication # filtrage idem precedent
 
         #print('LIST:', self.thumbnails_directory_list, 'Length:', len(thumbnails_directory_list))
 
         wm.BML_popup_alive = False # utile si on n'a pas besoin de la popup
-        self.popup_down = False # vérifie que la popup vient d'être fermée
+        self.popup_down = False # verifie que la popup vient d'etre fermee
         if context.object.active_material.name + ".jpeg" in self.thumbnails_directory_list:
             bpy.ops.material.bml_rename_popup('INVOKE_DEFAULT')
         else:
@@ -147,7 +147,7 @@ class RenderProgressionHandler(bpy.types.Operator):
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
 
-class RenderProgressionUpdate(bpy.types.Operator): #### TODO penser mécanisme de coupure auto à la fin du rendu > handler ?
+class RenderProgressionUpdate(bpy.types.Operator): #### TODO penser mecanisme de coupure auto a la fin du rendu > handler ?
     """ TODO """
     bl_idname = "view3d.bml_render_progression_update"
     bl_label = "Render Progression Update"
@@ -156,24 +156,24 @@ class RenderProgressionUpdate(bpy.types.Operator): #### TODO penser mécanisme d
     def modal(self, context, event):
         wm = context.window_manager
 
-        if not isfile(join(dirname(__file__),'Render_output.txt')): # Vérification trop rapide, fichier texte pas encore créé au moment du lancement.
+        if not isfile(join(dirname(__file__),'Render_output.txt')): # Verification trop rapide, fichier texte pas encore cree au moment du lancement.
             return {'PASS_THROUGH'}
 
-        if isfile(join(dirname(__file__), 'Render_count.txt')): # TODO à placer dans le isfile précédent > une seule occurence
+        if isfile(join(dirname(__file__), 'Render_count.txt')): # TODO a placer dans le isfile precedent > une seule occurence
                 with open( join(dirname(__file__), 'Render_count.txt'), 'r') as log:
                     line = log.readlines()[0]
-                    if 'Render Total: ' in line: # détecté seulement au premier coup
+                    if 'Render Total: ' in line: # detecte seulement au premier coup
                         wm.BML.max_render_nb = int(line.split('Render Total: ')[1])
 
         self.inspect_render_log(context)
 
-        if wm.BML.render_progression == 10: # TODO fusionner avec is file précédent, afin d'éviter deux lectures.
+        if wm.BML.render_progression == 10: # TODO fusionner avec is file precedent, afin d'eviter deux lectures.
             if isfile(join(dirname(__file__), 'Render_count.txt')):
                 with open( join(dirname(__file__), 'Render_count.txt'), 'r') as log:
                         line = log.readlines()[-1] # ATTENTION ligne vide
                         new_rdr_nb = int(line[14:].split(' -')[0]) # len('Render number: ')-1 = 15
                         if wm.BML.render_nb != new_rdr_nb:
-                            #wm.BML.render_material = line.split(' - ')[1].split('Material: ')[0] TODO afficher nom matériau
+                            #wm.BML.render_material = line.split(' - ')[1].split('Material: ')[0] TODO afficher nom materiau
                             wm.BML.render_nb = new_rdr_nb
                             wm.BML.render_progression = 0
                             wm.BML.render_status = ''
@@ -211,27 +211,27 @@ class RenderProgressionUpdate(bpy.types.Operator): #### TODO penser mécanisme d
         with open( join(dirname(__file__),'Render_output.txt'), 'r') as log:
             lines = log.readlines()
             lines.reverse()
-            if not lines: # Si rendu pas encore lancé (création du fichier texte)
+            if not lines: # Si rendu pas encore lance (creation du fichier texte)
                 return
             for line in lines:
                 if 'Finished' in line:
                     wm.BML.render_progression = 10
                     break
-                elif 'Path Tracing Tile 1/1' in line and not '0/' in line: # not 0/ pour éviter la ligne sans samples calculés, et le progression à 0% ### TODO adapter au nombre de tile
+                elif 'Path Tracing Tile 1/1' in line and not '0/' in line: # not 0/ pour eviter la ligne sans samples calcules, et le progression a 0% ### TODO adapter au nombre de tile
                     wm.BML.render_progression = round(
                         (
                             int(line.split('Sample ')[1].split('/')[0]) /
                             int(line.split('Sample ')[1].split('/')[1])
                          )*10
-                        , 0) # Nombre de samples calculés / total > rapporté à un entier de 0 à 10
+                        , 0) # Nombre de samples calcules / total > rapporte a un entier de 0 à 10
                     break
                 elif 'Synchronizing' in line:
-                    wm.BML.render_progression = 1 # valide les conditions pour éviter une coupure # 10% car petite partie du temps > valeur arbitraire TODO trouver meilleure estimation
-                    wm.BML.render_status = 'Initializing' # Si besoin du détail plus tard # 'Updating' + line.split('Updating')[1].split('/')[1] # Coupure avec 'Updating' sans espace final, espace intégré dans la partie [1]
+                    wm.BML.render_progression = 1 # valide les conditions pour eviter une coupure # 10% car petite partie du temps > valeur arbitraire TODO trouver meilleure estimation
+                    wm.BML.render_status = 'Initializing' # Si besoin du detail plus tard # 'Updating' + line.split('Updating')[1].split('/')[1] # Coupure avec 'Updating' sans espace final, espace integre dans la partie [1]
                     break
                 elif 'Updating' in line:
-                    wm.BML.render_progression = 2 # valide les conditions pour éviter une coupure #  20% car partie du temps significative > valeur arbitraire TODO trouver meilleure estimation
-                    wm.BML.render_status = 'Computing BVH' # Si besoin du détail plus tard # 'Updating' + line.split('Updating')[1].split('/')[1] # Coupure avec 'Updating' sans espace final, espace intégré dans la partie [1]
+                    wm.BML.render_progression = 2 # valide les conditions pour eviter une coupure #  20% car partie du temps significative > valeur arbitraire TODO trouver meilleure estimation
+                    wm.BML.render_status = 'Computing BVH' # Si besoin du detail plus tard # 'Updating' + line.split('Updating')[1].split('/')[1] # Coupure avec 'Updating' sans espace final, espace integre dans la partie [1]
                     break
 
 #############################################
@@ -267,7 +267,7 @@ class BML_RenamePopup(Operator):
         self.thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg')]
 
         if context.object.active_material.name + ".jpeg" in self.thumbnails_directory_list:
-            context.window_manager.BML_new_name = context.material.name + '.001' # TODO gérer numéro
+            context.window_manager.BML_new_name = context.material.name + '.001' # TODO gerer numero
             context.window_manager.BML_replace_rename = 'rename'
             dpi_value = bpy.context.user_preferences.system.dpi
             return context.window_manager.invoke_props_dialog(self, width=dpi_value*5, height=100)
@@ -312,7 +312,7 @@ class ChangeNameInBLM(Operator):
 
             self.report(
                 {'INFO'}, 'Thumbnails updated. Created: {0} - Orphaned: {1}'.format(
-                len(self.thumbs_list) - len(self.thumbnails_directory_list), # attention plus valable en cas de suppression antérieure au calcul
+                len(self.thumbs_list) - len(self.thumbnails_directory_list), # attention plus valable en cas de suppression anterieure au calcul
                 'TODO')
             )
 
@@ -324,7 +324,7 @@ class ChangeNameInBLM(Operator):
 
     def invoke(self, context, event):
 
-        # génération de la liste des miniatures
+        # generation de la liste des miniatures
         list_files = os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Cloth')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Softbox')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Sphere')) + os.listdir(join(os.path.dirname(__file__), 'Thumbnails', 'Hair'))
         self.thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')] # il faut la réinitialiser é chaque lancement, en cas de mofication # filtrage idem précédent
 
@@ -332,7 +332,7 @@ class ChangeNameInBLM(Operator):
         #print('LIST:', self.thumbnails_directory_list, 'Length:', len(thumbnails_directory_list))
 
         rename_mat_in_blm() # executé la première fois uniquement
-        bpy.ops.view3d.bml_render_progression_update('INVOKE_DEFAULT') # Mets à jour le handler
+        bpy.ops.view3d.bml_render_progression_update('INVOKE_DEFAULT') # Mets a jour le handler
         bpy.ops.material.update_thumbnails('INVOKE_DEFAULT')
 
         context.window_manager.modal_handler_add(self)
@@ -340,7 +340,7 @@ class ChangeNameInBLM(Operator):
         return {'RUNNING_MODAL'}
 
 #############################################
-##               Mise à jour              ###
+##               Mise a jour              ###
 #############################################
 
 class UpdateThumbnails(Operator): ####### ATTENTION Bloquer le rendu en cas d'ajout en cours (context.window_manager.BML.is_generating_preview = True), sans bloquer l'update de la preview TODO
@@ -354,7 +354,7 @@ class UpdateThumbnails(Operator): ####### ATTENTION Bloquer le rendu en cas d'aj
         return 'generate_thumbs_placeholder.txt' not in self.thumbs_dir_list
 
     def modal(self, context, event):
-        ##### AFFICHER REPORT avec génération thumbnails - 2 propriétés pour éa
+        ##### AFFICHER REPORT avec generation thumbnails - 2 proprietes pour ea
 
         if self.is_thumbnails_updated(): # on attends un changement dans le dossier des miniatures
             register_BML_pcoll_preview()
@@ -368,12 +368,13 @@ class UpdateThumbnails(Operator): ####### ATTENTION Bloquer le rendu en cas d'aj
         #print('LIST:', self.thumbnails_directory_list, 'Length:', len(thumbnails_directory_list))
 
         library_path = os.path.dirname(os.path.abspath(__file__))
-        BML_shader_library = context.user_preferences.addons['BML'].preferences.library_blend_path
+        addon_dir = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
+        BML_shader_library = context.user_preferences.addons[addon_dir].preferences.library_blend_path_ui
         update_script = join(library_path, 'update_thumbnails.py')
 
-        bpy.ops.view3d.bml_render_progression_update('INVOKE_DEFAULT') # Mets à jour le handler
-        with open(join(os.path.dirname(os.path.abspath(__file__)),'Thumbnails', 'generate_thumbs_placeholder.txt'), 'w'): # fichier existant pendant toute la mise à jour, on détectera sa suppression
-            sub = subprocess.Popen([bpy.app.binary_path, BML_shader_library, '-b', '--python', update_script]) #### Attention, un seul changement et ça coupe... TODO vérifier réponse du process
+        bpy.ops.view3d.bml_render_progression_update('INVOKE_DEFAULT') # Mets a jour le handler
+        with open(join(os.path.dirname(os.path.abspath(__file__)),'Thumbnails', 'generate_thumbs_placeholder.txt'), 'w'): # fichier existant pendant toute la mise à jour, on detectera sa suppression
+            sub = subprocess.Popen([bpy.app.binary_path, BML_shader_library, '-b', '--python', update_script]) #### Attention, un seul changement et ça coupe... TODO verifier reponse du process
 
         self.report({'INFO'}, "Thumbnails Rendering started...")
 
@@ -386,7 +387,7 @@ class UpdateThumbnails(Operator): ####### ATTENTION Bloquer le rendu en cas d'aj
 #############################################
 
 class RemoveMaterialFromBML(Operator):
-    ''' Supprimer un matériau de la librairie '''
+    ''' Supprimer un materiau de la librairie '''
     bl_idname = "material.remove_material_from_bml"
     bl_label = "Remove material from BML"
     bl_description = "Remove selected material from your library"
@@ -404,16 +405,16 @@ class RemoveMaterialFromBML(Operator):
         wm.BML.is_generating_preview = True
 
         if self.is_invoke_call:
-            material = wm.BML_previews.split('.jpeg')[0] #### ATTENTION '.jpeg' déjà inclut dans le nom du matériau
+            material = wm.BML_previews.split('.jpeg')[0] #### ATTENTION '.jpeg' deja inclut dans le nom du materiau
         else:
             material = context.material.name
-        self.is_invoke_call = False # à remettre à la valeur par défaut de suite, en cas de nouvel appel
+        self.is_invoke_call = False # a remettre a la valeur par defaut de suite, en cas de nouvel appel
 
         thumbnail_type = wm.preview_type
 
         library_path = os.path.dirname(os.path.abspath(__file__))
-
-        BML_shader_library = context.user_preferences.addons['BML'].preferences.library_blend_path
+        addon_dir = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
+        BML_shader_library = context.user_preferences.addons[addon_dir].preferences.library_blend_path_ui
         BML_remove_script = join(library_path, 'remove_material_from_library.py')
         thumbnail_folder = [f for f in listdir(join(library_path, 'Thumbnails')) if isfile(join(library_path, 'Thumbnails', f, material + ".jpeg"))][0]
         BML_thumbnails_directory = join(library_path, 'Thumbnails', thumbnail_folder)
@@ -427,7 +428,7 @@ class RemoveMaterialFromBML(Operator):
         sub.wait() # important avant update, sinon pas de changement
 
         bpy.ops.material.update_thumbnails('INVOKE_DEFAULT')
-        self.report({'INFO'}, "Thumbnails updated. Removed: 1") # nombre à changer en cas de nettoyage multiple # report inefficace si opérateur enfant
+        self.report({'INFO'}, "Thumbnails updated. Removed: 1") # nombre a changer en cas de nettoyage multiple # report inefficace si opérateur enfant
         #wm.BML.preview_block_update = True
         register_BML_pcoll_preview()
         wm.BML.preview_block_update = False

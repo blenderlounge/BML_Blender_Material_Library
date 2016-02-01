@@ -218,7 +218,7 @@ class Cycles_PT_bml_panel(Panel):
 
             row = layout.split(percentage=.85)
             col = row.column()
-            col.scale_y = 1 # TODO préférence choix scale
+            col.scale_y = 1 # TODO preference choix scale
 
             if wm.BML_previews:
                 col.template_icon_view(wm, "BML_previews")
@@ -268,7 +268,7 @@ class Cycles_PT_bml_panel(Panel):
 #            layout.operator("material.delete_unused_materials",text="Delete unused materials")
 #            layout.operator("object.select_linked", icon='RESTRICT_SELECT_OFF').type='MATERIAL'
         else:
-            layout.label("No mesh selected", icon='Info')
+            layout.label("No mesh selected", icon='INFO')
 
         # ### DEBUG
         if wm.BML.debug_ui:
