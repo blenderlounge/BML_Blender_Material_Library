@@ -175,6 +175,7 @@ def rename_mat_in_blm():
 
     material = bpy.data.window_managers["WinMan"].BML_previews.split(".jpeg")[0]
     library_path = os.path.dirname(os.path.abspath(__file__))
+    addon_dir = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
     wm = bpy.context.window_manager
     BML_render_type = wm.preview_type
     new_name = wm.BML_new_name
@@ -183,7 +184,7 @@ def rename_mat_in_blm():
     thumbnails_directory_list = [file for file in list_files if file.endswith('.jpeg') or file.endswith('.jpg')]
 
     BML_thumbnails_directory = join(library_path, 'Thumbnails', BML_render_type[1:])
-    BML_shader_library = bpy.context.user_preferences.addons['BML'].preferences.library_blend_path_ui
+    BML_shader_library = bpy.context.user_preferences.addons[addon_dir].preferences.library_blend_path_ui
     BML_rename_script = join(library_path, 'rename_material_in_library.py')
 
     print('[BML] Renaming material: ', material, 'To: ', new_name, 'With script:', BML_rename_script)
